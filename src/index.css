@@ -1,0 +1,106 @@
+html {
+    margin: 0;
+    height: 100%;
+}
+body{
+    min-height: 100%;
+    background-color: #e6ecf0;
+}
+
+.sign_in {
+    margin-top: 15%;
+    width: 100%;
+    padding: 0;
+    background: white;
+}
+
+.title_sign_in {
+    padding: 5px;
+    font-size: 24px;
+    text-align: center;
+    color: white;
+    background: blue;
+}
+
+.form_sign_in {
+    margin: 5px;
+}
+
+.send {
+    border-radius: 30px;
+    float: right;
+    border: solid 2px dodgerblue;
+    background: #4ab3f4;
+}
+
+.send:focus {
+    outline : deepskyblue;
+}
+
+.send:hover {
+    background: dodgerblue;
+}
+
+.reply {
+    background: none;
+    border: none;
+}
+
+.reply:hover {
+    color: dodgerblue;
+}
+
+.reply:focus {
+    outline : none;
+}
+
+.like {
+    background: none;
+    border: none;
+}
+
+.like:hover {
+    color: pink;
+}
+
+.like:focus {
+    outline : none;
+}
+
+.share {
+    background: none;
+    border: none;
+}
+
+.share:hover {
+    color: green;
+}
+
+.share:focus {
+    outline : none;
+}
+
+.button-post{
+    position: inherit;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    text-align: left;
+}
+
+.button-info{
+    position: inherit;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    text-align: center;
+}
+
+.button-info:focus {
+    outline: none;
+    border-bottom: 2px solid #4ab3f4;
+}
