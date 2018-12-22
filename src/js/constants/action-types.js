@@ -6,3 +6,4 @@ export const SEQUENCE = "SEQUENCE";
 export const DATA = "DATA";
 export const USERNAME = "USERNAME";
 export const FOLLOWINGS = "FOLLOWINGS";
+export const USERPOST = "USERPOST";
