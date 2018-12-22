@@ -40,6 +40,10 @@ const UpdateAccountParams = vstruct([
   { name: 'value', type: vstruct.VarBuffer(vstruct.UInt16BE) },
 ]);
 
+const Followings = vstruct([
+    { name: 'addresses', type: vstruct.VarArray(vstruct.UInt16BE, vstruct.Buffer(35)) },
+]);
+
 const InteractParams = vstruct([
   // Post or comment (or something else?)
   { name: 'object', type: vstruct.Buffer(32) },
@@ -47,6 +51,11 @@ const InteractParams = vstruct([
   // Depend on object on parent object keys. First 16 bytes of content are nonce/iv
   { name: 'content', type: vstruct.VarBuffer(vstruct.UInt16BE) },
   // React if '', like, love, haha, anrgy, sad, wow
+]);
+
+const ReactContent = vstruct([
+    { name: 'type', type: vstruct.UInt8 },
+    { name: 'reaction', type: vstruct.UInt8 },
 ]);
 
 export function encode(tx) {
@@ -72,15 +81,29 @@ export function encode(tx) {
       break;
 
       case 'post':
-      params = PostParams.encode({
-          ...tx.params,
-          content: Buffer.from(tx.params.content),
-      });
+        params = PostParams.encode({
+            ...tx.params,
+            content: PlainTextContent.encode(tx.params.content),
+        });
       operation = 3;
       break;
 
-    case 'update_account':
-      params = UpdateAccountParams.encode(tx.params);
+      case 'update_account':
+        if(tx.params.key === 'name') {
+            params = UpdateAccountParams.encode({
+                ...tx.params,
+                value: Buffer.from(tx.params.value, "utf8")
+            });
+        }
+        else if(tx.params.key === 'followings') {
+            params = UpdateAccountParams.encode({
+                ...tx.params,
+                value: Followings.encode(tx.params.value),
+            });
+        }
+         else{
+            params = UpdateAccountParams.encode(tx.params);
+        }
       operation = 4;
       break;
 
@@ -131,11 +154,24 @@ export function decode(data) {
     case 3:
       operation = 'post';
       params = PostParams.decode(tx.params);
+      params.content = PlainTextContent.decode(params.content);
       break;
 
     case 4:
       operation = 'update_account';
       params = UpdateAccountParams.decode(tx.params);
+      if(params.key === 'name') {
+          params.value = params.value.toString("utf8");
+      }
+      else if(params.key === 'followings') {
+          params.value = Followings.decode(params.value);
+          for(let i =0; i<params.value.addresses.length; i++) {
+              params.value.addresses[i] = base32.encode(params.value.addresses[i]);
+          }
+      }
+      else {
+
+      }
       break;
     
     case 5:
