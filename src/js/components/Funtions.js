@@ -1,5 +1,6 @@
 import axios from "axios";
 import {decode} from "../transaction";
+import moment from 'moment';
 
 export async function getData(web, pk) {
     let data = [];
@@ -7,6 +8,7 @@ export async function getData(web, pk) {
     let per_page = 30;
     await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22")
         .then(res => {
+            if(res.data.result.total_count === 0) return "Not exist";
             pages = Math.floor(res.data.result.total_count / 30);
             if (res.data.result.total_count % 30 > 0) pages = pages + 1;
         });
@@ -65,18 +67,38 @@ export async function getTime(web, height) {
         .then(res => {
             time = res.data.result.signed_header.header.time;
         });
+
     time = new Date(time);
-    time = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(time);
+    //time = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(time);
     return time;
 }
 
-export async function Energy(cel, height) {
-    const hesodutru = 1;
-    const kichthuongtoida = 22020096;
-    const chukybiendoi = 86400;
-    const soceltoida = 9007199254740991;
-    let nangluongsudungtrongchukybiendoi;
-    const nangluonghethong = hesodutru * kichthuongtoida * chukybiendoi;
-    nangluongsudungtrongchukybiendoi = 0;
-    const nangluongtaikhoan = cel * nangluonghethong / soceltoida - nangluongsudungtrongchukybiendoi;
+export async function getLatestBlockTime(web) {
+    await axios.get(web + "/status")
+        .then(res => {
+            return res.data.result.sync_info.latest_block_time;
+        });
+}
+
+export async function getEnergy(balance, bandwidthTime, bandwidth, txSize, currentBlockTime) {
+    const BANDWIDTH_PERIOD = 86400; // chu kỳ biến đổi
+    const MAX_BLOCK_SIZE = 22020096; // kích thước block tối đa
+    const RESERVE_RATIO = 1; // hệ số dự trữ
+    const MAX_CELLULOSE = Number.MAX_SAFE_INTEGER; //9007199254740991 số cel tối đa
+
+    // năng lượng hệ thống (1.902.536.294.400)
+    const NETWORK_BANDWIDTH = RESERVE_RATIO * MAX_BLOCK_SIZE * BANDWIDTH_PERIOD;
+
+    // năng lượng tài khoản tối đa (52805.9266) balance = 249999700
+    const bandwidthLimit = balance / MAX_CELLULOSE * NETWORK_BANDWIDTH;
+
+    // tính khoảng thời gian giữa 2 lần giao dịch
+    const diff = bandwidthTime
+        ? moment(currentBlockTime).unix() - moment(bandwidthTime).unix()
+        : BANDWIDTH_PERIOD;
+
+    // năng lượng đã sử dụng trong chu kỳ biến đổi
+    bandwidth = Math.ceil(Math.max(0, (BANDWIDTH_PERIOD - diff) / BANDWIDTH_PERIOD) * bandwidth + txSize);
+
+    return { energy: (bandwidthLimit-bandwidth).toFixed(0), bandwidth: bandwidth};
 }
