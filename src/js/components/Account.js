@@ -5,7 +5,7 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import * as routes from "../constants/routes";
 
-class Homepage extends Component {
+class Account extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -28,15 +28,15 @@ class Homepage extends Component {
                         <div>Thiện Nhân</div>
                         <div>123</div>
                         <button className="reply" onClick={this.reply} title="Reply">
-                            <img src={require("../../image/Reply.png")} width="18"/>
+                            <img alt="reply" src={require("../../image/Reply.png")} width="18"/>
                             <span><b> </b></span>
                         </button>
                         <button className="like" onClick={this.like} title="Like">
-                            <img src={require("../../image/Heart.ico")} width="18"/>
+                            <img alt="like" src={require("../../image/Heart.ico")} width="18"/>
                             <span><b> </b></span>
                         </button>
                         <button className="share" onClick={this.share} title="Share">
-                            <img src={require("../../image/Share.ico")} width="18"/>
+                            <img alt="share" src={require("../../image/Share.ico")} width="18"/>
                             <span><b> </b></span>
                         </button>
                     </div>
@@ -53,15 +53,15 @@ class Homepage extends Component {
                         <div>Thiện Nhân</div>
                         <div>456</div>
                         <button className="reply" onClick={this.reply} title="Reply">
-                            <img src={require("../../image/Reply.png")} width="18"/>
+                            <img alt="reply" src={require("../../image/Reply.png")} width="18"/>
                             <span><b> 1</b></span>
                         </button>
                         <button className="like" onClick={this.like} title="Like">
-                            <img src={require("../../image/Heart.ico")} width="18"/>
+                            <img alt="like" src={require("../../image/Heart.ico")} width="18"/>
                             <span><b> 1</b></span>
                         </button>
                         <button className="share" onClick={this.share} title="Share">
-                            <img src={require("../../image/Share.ico")} width="18"/>
+                            <img alt="share" src={require("../../image/Share.ico")} width="18"/>
                             <span><b> 1</b></span>
                         </button>
                     </div>
@@ -252,4 +252,4 @@ class Homepage extends Component {
 
 export default compose(
 
-)(Homepage)
+)(Account)
