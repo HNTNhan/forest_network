@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as routes from '../constants/routes';
 import { compose } from 'redux'
-import {auth, key, sequence, data} from "../actions";
+import {auth, key, sequence, followings, userName, energy} from "../actions";
 import axios from 'axios';
 import { Keypair, StrKey } from 'stellar-base';
 import {decode} from "../transaction";
-import store from "../store";
+import store from "../store"
+import {getData, getEnergy, getLatestBlockTime, getTime} from "./Funtions";
+import base32 from "base32.js"
 
 const mapStateToProps = state => {
-    return { auth: state.auth, website: state.website, keypair: state.key};
+    return { auth: state.auth, website: state.website, sequence: state.sequence, keypair: state.key,
+        followings: state.followings, userName:state.userName};
 };
 
 
@@ -18,7 +21,9 @@ const mapDispatchToProps = dispatch => {
         Auth: bool => dispatch(auth(bool)),
         Key: Keypair => dispatch(key(Keypair)),
         Sequence: int => dispatch(sequence(int)),
-        Data: array => dispatch(data(array)),
+        Followings: array => dispatch(followings(array)),
+        UserName: string => dispatch(userName(string)),
+        Energy: object => dispatch(energy(object)),
     };
 };
 class SignInPage extends Component{
@@ -38,33 +43,102 @@ class SignInPage extends Component{
     }
 
     //SBXI7TZ6DXHTOX6QW6VQ7F3YWARVA76ZWWKXWC6COHJTQEEJP3ELPQOD
-    signIn(){
+    async signIn(){
         const prk = document.getElementById("prk").value;
         if (StrKey.isValidEd25519SecretSeed(prk)) {
             const pk = Keypair.fromSecret(prk);
-            axios.get(this.props.website + "/tx_search?query=%22account=%27" + pk.publicKey() + "%27%22")
-                .then(res => {
-                    if(res.data.result.total_count === '0' || res.data.result.total_count === 0) {
-                        this.setState({
-                            check: false,
-                        })
+            let data = await getData(this.props.website, pk.publicKey());
+
+            if(data === "Not exist")
+            {
+                this.setState({
+                    check: false,
+                })
+            }
+            else {
+                let balance = 0;
+                let bandwidthTime = 0;
+                let bandwidth = 0;
+                for(let i=1; i<data.length; i++) {
+                    let tx = Buffer(data[i].tx, "base64");
+                    let txSize = tx.length;
+                    try {
+                        tx = decode(tx);
+                    }
+                    catch(error) {
+                        continue;
+                    }
+                    if(tx.operation === "payment") {
+                        if(tx.account === pk.publicKey()) {
+                            balance -= parseInt(tx.params.amount);
+                            let time = await getTime(this.props.website, data[i].height);
+                            const energy = await getEnergy(balance, bandwidthTime, bandwidth, txSize, time);
+                            bandwidthTime = time;
+                            bandwidth = energy.bandwidth;
+                        }
+                        else {
+                            balance += parseInt(tx.params.amount);
+                            let time = await getTime(this.props.website, data[i].height);
+                            const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
+                            bandwidthTime = time;
+                            bandwidth = energy.bandwidth;
+                        }
                     }
                     else {
-                        this.props.Key(pk);
-                        this.props.Auth(true);
-                        const txs = res.data.result.txs;
-                        for (let i = res.data.result.total_count - 1 ; i>=0; i--) {
-                            let tx = Buffer(res.data.result.txs[i].tx, "base64");
-                            tx = decode(tx);
-                            if(tx.account === pk.publicKey()) {
-                                this.props.Sequence(tx.sequence+1);
-                                break;
-                            }
-                        }
-                        this.props.Data(txs);
-                        this.props.history.push(routes.LANDING);
+                        let time = await getTime(this.props.website, data[i].height);
+                        const energy = await getEnergy(balance, bandwidthTime, bandwidth, txSize, time);
+                        bandwidthTime = time;
+                        bandwidth = energy.bandwidth;
                     }
-            });
+                }
+                this.props.Energy({
+                    pos: data.length,
+                    balance: balance,
+                    bandwidthTime: bandwidthTime,
+                    bandwidth: bandwidth,
+                });
+                let time = await getLatestBlockTime(this.props.website);
+                const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
+
+
+                this.props.Key({
+                    key: pk,
+                    pk: pk.publicKey(),
+                    prk: Buffer.from(base32.decode(prk)),
+                });
+
+                this.props.Auth(true);
+
+                for (let i = data.length - 1 ; i>=0; i--) {
+                    let tx = Buffer(data[i].tx, "base64");
+                    tx = decode(tx);
+                    if(tx.account === pk.publicKey()) {
+                        this.props.Sequence(tx.sequence+1);
+                        break;
+                    }
+                }
+
+                for(let i = data.length - 1; i>=0;  i--) {
+                    let tx = Buffer.from(data[i].tx, "base64");
+                    try {
+                        tx = decode(tx);
+                    }
+                    catch(error) {
+                        continue;
+                    }
+                    if(this.props.userName === null) {
+                        if(tx.operation === "update_account" && tx.params.key === "name") {
+                            this.props.UserName(tx.params.value);
+                        }
+                    }
+                    if(this.props.followings === null) {
+                        if(tx.operation === "update_account" && tx.params.key === "followings") {
+                            this.props.Followings(tx.params.value);
+                        }
+                    }
+                }
+            }
+            this.props.history.push(routes.LANDING);
         }
         else {
             this.setState({
