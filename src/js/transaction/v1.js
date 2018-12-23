@@ -2,6 +2,8 @@ const vstruct = require('varstruct');
 const base32 = require('base32.js');
 const { Keypair } = require('stellar-base');
 
+
+
 const Transaction = vstruct([
   { name: 'version', type: vstruct.UInt8 },
   { name: 'account', type: vstruct.Buffer(35) },

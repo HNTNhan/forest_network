@@ -1,4 +1,5 @@
 export const AUTH = "AUTH";
+export const LOGOUT = "LOGOUT";
 export const WEBSITE = "WEBSITE";
 export const SYSTEMACTIVE = "SYSTEMACTIVE";
 export const KEY = "KEY";
@@ -7,3 +8,4 @@ export const DATA = "DATA";
 export const USERNAME = "USERNAME";
 export const FOLLOWINGS = "FOLLOWINGS";
 export const USERPOST = "USERPOST";
+export const ENERGY = "ENERGY";

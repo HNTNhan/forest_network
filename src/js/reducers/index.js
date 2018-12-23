@@ -7,7 +7,9 @@ import {
     DATA,
     USERNAME,
     FOLLOWINGS,
-    USERPOST
+    USERPOST,
+    LOGOUT,
+    ENERGY,
 } from "../constants/action-types";
 import { Keypair } from 'stellar-base';
 
@@ -20,7 +22,8 @@ const initialState = {
     data: null,
     userName: null,
     followings: null,
-    userPost: null
+    userPost: null,
+    energy: null,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -43,6 +46,10 @@ const rootReducer = (state = initialState, action) => {
             return {...state, followings: action.payload};
         case USERPOST:
             return {...state, userPost: action.payload};
+        case ENERGY:
+            return {...state, energy: action.payload};
+        case LOGOUT:
+            return initialState;
         default:
             return state;
     }
