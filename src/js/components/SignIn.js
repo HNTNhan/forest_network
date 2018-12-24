@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as routes from '../constants/routes';
 import { compose } from 'redux'
-import {auth, key, sequence, followings, userName, energy} from "../actions";
+import {auth, key, sequence, followings, userName, userPicture,energy} from "../actions";
 import axios from 'axios';
 import { Keypair, StrKey } from 'stellar-base';
 import {decode} from "../transaction";
@@ -12,7 +12,7 @@ import base32 from "base32.js"
 
 const mapStateToProps = state => {
     return { auth: state.auth, website: state.website, sequence: state.sequence, keypair: state.key,
-        followings: state.followings, userName:state.userName};
+        followings: state.followings, userName:state.userName, userPicture: state.userPicture};
 };
 
 
@@ -23,6 +23,7 @@ const mapDispatchToProps = dispatch => {
         Sequence: int => dispatch(sequence(int)),
         Followings: array => dispatch(followings(array)),
         UserName: string => dispatch(userName(string)),
+        UserPicture: string => dispatch(userPicture(string)),
         Energy: object => dispatch(energy(object)),
     };
 };
@@ -102,7 +103,6 @@ class SignInPage extends Component{
 
 
                 this.props.Key({
-                    key: pk,
                     pk: pk.publicKey(),
                     prk: Buffer.from(base32.decode(prk)),
                 });
@@ -129,6 +129,11 @@ class SignInPage extends Component{
                     if(this.props.userName === null) {
                         if(tx.operation === "update_account" && tx.params.key === "name") {
                             this.props.UserName(tx.params.value);
+                        }
+                    }
+                    if(this.props.userPicture === null) {
+                        if(tx.operation === "update_account" && tx.params.key === "picture") {
+                            this.props.UserPicture(tx.params.value);
                         }
                     }
                     if(this.props.followings === null) {
