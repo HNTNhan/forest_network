@@ -69,7 +69,32 @@ class Navbar extends Component {
                           <a className="dropdown-item" href="#">Something else here</a>
                       </div>
                       </li>
-                  
+                      <li className="nav-item dropdown no-arrow" style={{position: "relative",
+                      float: "right"}}>
+                      <a className="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i className="fas fa-envelope fa-fw"></i>
+                          <span className="badge badge-danger">4+</span>
+                      </a>
+                      <div className="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
+                          <a className="dropdown-item" href="#">Action</a>
+                          <a className="dropdown-item" href="#">Another action</a>
+                          <div className="dropdown-divider"></div>
+                          <a className="dropdown-item" href="#">Something else here</a>
+                      </div>
+                      </li>
+                      <li className="nav-item dropdown no-arrow" style={{position: "relative",
+                      float: "right"}}>
+                      <a className="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i className="fas fa-envelope fa-fw"></i>
+                          <span className="badge badge-danger">4+</span>
+                      </a>
+                      <div className="dropdown-menu dropdown-menu-right" aria-labelledby="messagesDropdown">
+                          <a className="dropdown-item" href="#">Action</a>
+                          <a className="dropdown-item" href="#">Another action</a>
+                          <div className="dropdown-divider"></div>
+                          <a className="dropdown-item" href="#">Something else here</a>
+                      </div>
+                      </li>
                   
                   </ul>
                   

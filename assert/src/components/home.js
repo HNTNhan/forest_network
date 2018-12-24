@@ -22,11 +22,7 @@ class Home extends Component {
 						<div className="panel-body">
 							<span style={{display: 'table',margin: '0 auto'}} ><img className="rounded-circle" alt={user.username} src="images/chalee.jpg" style={{width:100 , height:100}}></img>
 							<p  style={{textAlign: 'center' , fontWeight: 'bold'}}><Link to="/user" style={{textDecoration: 'none'}}>{user.username}</Link> </p>
-							{/* <Link to='/user'>
-                                <li className="nav-item alignRignt accoutInfor ">
-                                    <div style={{color: 'black', textDecoration: 'none'}}>{user.username}</div>
-                                </li>
-                            </Link> */}
+							{}
 							</span>
 							<div className="row">
 									<div className="col-3 text-center font-weight-bold"> Tweet</div>

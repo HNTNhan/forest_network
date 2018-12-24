@@ -48,6 +48,38 @@ class UserProfile extends Component {
                             <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
                             <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
                         </div>
+                        <div className="row">
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.number} </div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.following}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.follower}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.favorite}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
+                        </div>
+                        <div className="row">
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.number} </div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.following}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.follower}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.favorite}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
+                        </div>
+                        <div className="row">
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.number} </div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.following}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.follower}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.favorite}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
+                        </div>
+                        <div className="row">
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.number} </div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.following}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.follower}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.favorite}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
+                        </div>
                     </div>
                     <div className="col-3">
                         <div className="float-left">
@@ -160,7 +192,14 @@ class UserProfile extends Component {
                             </div>
                         </div>
                     </div>
-
+                    <div className="row">
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.number} </div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.following}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.follower}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.favorite}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.list}</div>
+                            <div className="col-2 text-center font-weight-bold text-success">{user.tweet.moment}</div>
+                        </div>
                 </div>
                 {/* Enc */}
             </div>
