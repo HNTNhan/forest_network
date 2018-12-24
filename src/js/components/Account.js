@@ -11,7 +11,6 @@ import { data, sequence, userName, followings, userPost, energy } from "../actio
 import { getAll } from './test';
 class Account extends Component {
     constructor(props) {
-        console.log(props);
         super(props);
         this.state = {
             energy: 0,
@@ -23,8 +22,6 @@ class Account extends Component {
         };
     }
     async componentWillMount() {
-        console.log(this.props.keypair.pk);
-        console.log('cwumount');
         let followings_name = [];
         let user_post = [];
         let data = await getData(this.props.website, this.props.keypair.pk);
@@ -137,8 +134,6 @@ class Account extends Component {
     }
 
     render() {
-        console.log(this.props);
-        console.log(this.state);
         let posts = [];
         let following = [];
         let follower = [];
