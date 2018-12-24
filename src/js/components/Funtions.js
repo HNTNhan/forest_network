@@ -53,9 +53,11 @@ export async function getName(web, pk) {
 }
 
 export async function convertName(pk, list_pk,  list_name, user_name) {
-    for(let i=0; i<list_pk.addresses.length; i++) {
-        if(pk === list_pk.addresses[i]) {
-            return list_name[i];
+    if(list_pk !== null) {
+        for(let i=0; i<list_pk.addresses.length; i++) {
+            if(pk === list_pk.addresses[i]) {
+                return list_name[i];
+            }
         }
     }
     return user_name

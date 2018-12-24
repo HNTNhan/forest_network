@@ -3,7 +3,7 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import * as routes from "../constants/routes";
 import connect from "react-redux/es/connect/connect";
-import {data, sequence, userName, followings, userPost, energy} from "../actions";
+import {data, sequence, userName, followings, userPost, energy, userPicture} from "../actions";
 import axios from "axios";
 import {decode, encode, sign} from "../transaction/index";
 import {getData, getName, convertName, getTime, getEnergy, getLatestBlockTime} from "./Funtions";
@@ -15,6 +15,7 @@ const mapDispatchToProps = dispatch => {
         Sequence: int => dispatch(sequence(int)),
         Data: array => dispatch(data(array)),
         UserName: string => dispatch(userName(string)),
+        UserPicture: string => dispatch(userPicture(string)),
         Followings: array => dispatch(followings(array)),
         UserPost: array => dispatch(userPost(array)),
         Energy: object => dispatch(energy(object)),
@@ -30,6 +31,7 @@ const mapStateToProps = state => {
         sequence: state.sequence,
         data: state.data,
         userName: state.userName,
+        userPicture: state.userPicture,
         followings: state.followings,
         userPost: state.userPost,
         energy: state.energy,
@@ -53,20 +55,20 @@ class LandingPage extends Component {
         this.show_post = this.show_post.bind(this);
         this.reply = this.reply.bind(this);
     }
-    /*
+
     async componentWillMount(){
         if(!this.props.auth) {
             this.props.history.push(routes.SIGN_IN);
         }
-        console.log(this.props.keypair.prk);
         const a = await base32.encode(Buffer.from(this.props.keypair.prk));
         console.log(a);
+        console.log(this.props.userPicture);
     }
-    */
-    async componentWillMount() {
+
+    async componentDidMount() {
         let followings_name = [];
         let user_post = [];
-        let data = await getData(this.props.website, "GCT5H6TEK7Q43EYJI6NWZ4DPGZXQUNFLW6VWD5EM4VSLUDNUA3AJNIKP");
+        let data = await getData(this.props.website, this.props.keypair.pk);
 
         let balance = this.props.energy.balance;
         let bandwidthTime = this.props.energy.bandwidthTime;
@@ -127,13 +129,15 @@ class LandingPage extends Component {
         const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
 
         this.props.UserPost(user_post);
-
-        for(let i=0; i<this.props.followings.addresses.length; i++) {
-            const temp_data = await getData(this.props.website, this.props.followings.addresses[i]);
-            data = data.concat(temp_data);
-            const name = await getName(this.props.website, this.props.followings.addresses[i]);
-            followings_name = followings_name.concat(name);
+        if(this.props.followings !== null) {
+            for(let i=0; i<this.props.followings.addresses.length; i++) {
+                const temp_data = await getData(this.props.website, this.props.followings.addresses[i]);
+                data = data.concat(temp_data);
+                const name = await getName(this.props.website, this.props.followings.addresses[i]);
+                followings_name = followings_name.concat(name);
+            }
         }
+
 
         for(let i=0; i<data.length-1; i++) {
             for (let j=i+1; j<data.length ; j++) {
@@ -145,6 +149,7 @@ class LandingPage extends Component {
             }
         }
 
+        this.props.Data(data);
 
         let posts = [];
         for(let i=0; i<data.length; i++) {
@@ -249,7 +254,6 @@ class LandingPage extends Component {
             }
         }
         let posts = [];
-        let user_post = 0;
         if(this.state.posts !== null) {
             for(let i = 0; i <= this.state.posts.length - 1; i++) {
                 posts = posts.concat(
@@ -291,12 +295,13 @@ class LandingPage extends Component {
                             </div>
 
                             <Link to={routes.ACCOUNT}>
-                                <div className="rounded-circle"
-                                     style={{position: "absolute", background: "#1da1f2",
-                                         width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}
-                                >
-                                    <img alt="" style={{position: "absolute", width: "25%", justifyContent: "center", top: "37.5%", left: "37.5%"}}
-                                         src={require("../../image/AddCamera.png")} className="rounded-circle"/>
+                                <div className="rounded-circle" style={{position: "absolute", background: "#1da1f2",
+                                         width: 100, height: 100, top: 50, left: 15, border: "3px solid white"}}>
+                                    {(this.props.userPicture === null)?
+                                        <img alt="avatar" style={{position: "absolute", width: "25%", justifyContent: "center", top: "37.5%", left: "37.5%"}}
+                                             src={require("../../image/AddCamera.png")} className="rounded-circle"/>
+                                        : <img alt="avatar" style={{position: "absolute", width: "100%", justifyContent: "center"}}
+                                               src={"data:image/jpeg/png;base64," + this.props.userPicture} className="rounded-circle" /> }
                                 </div>
                             </Link>
                             <br/>
@@ -323,7 +328,7 @@ class LandingPage extends Component {
                                     </div>
                                     <div className="col-lg-6 col-md-6 col-sm-6">
                                         <p style={{margin: 0}}><b>Following</b></p>
-                                        <p style={{margin: 0, fontSize: 20}}>{this.props.followings.addresses.length}</p>
+                                        <p style={{margin: 0, fontSize: 20}}>{(this.props.followings) ?this.props.followings.addresses.length : 0}</p>
                                     </div>
                                 </div>
                             </div>
