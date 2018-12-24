@@ -6,7 +6,7 @@ import * as routes from "../constants/routes";
 import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime } from "./Funtions";
 import { decode, encode, sign } from "../transaction/index";
 import { data, sequence, userName, followings, userPost, energy } from "../actions";
-
+import { FindFollowerInfor } from './Funtions';
 //
 class Account extends Component {
     constructor(props) {
@@ -19,6 +19,7 @@ class Account extends Component {
             balance: 0,
             chatBox: false,
             posts: [],
+            follower: []
         };
     }
     async componentWillMount() {
@@ -30,14 +31,14 @@ class Account extends Component {
         let balance = this.props.energy.balance;
         let bandwidthTime = this.props.energy.bandwidthTime;
         let bandwidth = this.props.energy.bandwidth;
-        console.log(data);
         const transictions = data.length;
-
+        var decodeArray = [];
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
             let txSize = tx.length;
             try {
                 tx = decode(tx);
+                decodeArray.push(tx)
             }
             catch(error) {
                 continue;
@@ -105,6 +106,25 @@ class Account extends Component {
             }
         }
 
+        //
+        var FollowerTx = [];
+        decodeArray.map(tx => {
+            if(tx.operation === 'update_account' && tx.params.key === 'followings'){
+                FollowerTx.push(tx);
+            }
+        })
+        //get username of follower.
+        let FollowerInfor =[];
+        for(let i=0; i < FollowerTx.length; i++) {
+            let temp = await FindFollowerInfor(FollowerTx[i]);
+            FollowerInfor.push(temp);
+        }
+    //     let x = await FindFollowerInfor(FollowerTx[0]);
+    //   console.log(x);
+    console.log(FollowerInfor);
+     
+      
+        //
         let posts = [];
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
@@ -131,7 +151,8 @@ class Account extends Component {
             posts: posts,
             transictions: transictions,
             balance: parseFloat(balance/100000000).toFixed(8),
-            followings_name: followings_name
+            followings_name: followings_name,
+            follower: FollowerInfor
         });
     }
 
@@ -202,42 +223,44 @@ class Account extends Component {
             })
         }
         
-        
-
-        follower = follower.concat(
-            <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
-                <div style={{background: "white"}}>
-                    <div style={{background: "#1da1f2"}}>
-                        <img height="100px"/>
-                    </div>
-                    <div className="rounded-circle"
-                         style={{position: "absolute", background: "#1da1f2",
-                             width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
-                        <img style={{position: "absolute", width: "100%", justifyContent: "center"}}
-                             src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
-                    </div>
-                    <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
-                        <div>Nguyễn Văn A</div>
-                        <div>@nguyenvana</div>
-                        <div className="row">
-                            <div className="col-4">
-                                <p style={{margin: 0}}>Posts</p>
-                                <p style={{margin: 0, fontSize: 20}}><b>10</b></p>
+        if(this.state.follower.length !== 0) {
+            this.state.follower.map(username => {
+                follower = follower.concat(
+                    <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
+                        <div style={{background: "white"}}>
+                            <div style={{background: "#1da1f2"}}>
+                                <img height="100px"/>
                             </div>
-                            <div className="col-4">
-                                <p style={{margin: 0}}>Following</p>
-                                <p style={{margin: 0, fontSize: 20}}><b>3</b></p>
+                            <div className="rounded-circle"
+                                 style={{position: "absolute", background: "#1da1f2",
+                                     width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
+                                <img style={{position: "absolute", width: "100%", justifyContent: "center"}}
+                                     src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
                             </div>
-                            <div className="col-4">
-                                <p style={{margin: 0}}>Follower</p>
-                                <p style={{margin: 0, fontSize: 18}}><b>4</b></p>
+                            <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
+                                <div>{username}</div>
+                                <div>@{username.split(' ').join('')}</div>
+                                <div className="row">
+                                    <div className="col-4">
+                                        <p style={{margin: 0}}>Posts</p>
+                                        <p style={{margin: 0, fontSize: 20}}><b>10</b></p>
+                                    </div>
+                                    <div className="col-4">
+                                        <p style={{margin: 0}}>Following</p>
+                                        <p style={{margin: 0, fontSize: 20}}><b>3</b></p>
+                                    </div>
+                                    <div className="col-4">
+                                        <p style={{margin: 0}}>Follower</p>
+                                        <p style={{margin: 0, fontSize: 18}}><b>4</b></p>
+                                    </div>
+                                </div>
                             </div>
+                            <br/>
                         </div>
                     </div>
-                    <br/>
-                </div>
-            </div>
-        );
+                );
+            })
+        }
 
         return(
             <div className="container-fluid">
@@ -260,7 +283,7 @@ class Account extends Component {
                         <div className="col-4">
                             <button className="button-info" onClick={() => this.setState({tag: "follower"})}>
                                 <div>Follower</div>
-                                <div>1</div>
+                                <div>{this.state.follower.length}</div>
                             </button>
                         </div>
                     </div>
