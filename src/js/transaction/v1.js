@@ -104,7 +104,10 @@ export function encode(tx) {
             });
         }
          else{
-            params = UpdateAccountParams.encode(tx.params);
+            params = UpdateAccountParams.encode({
+                ...tx.params,
+                value: Buffer.from(tx.params.value, 'base64'),
+            });
         }
       operation = 4;
       break;
@@ -172,7 +175,8 @@ export function decode(data) {
           }
       }
       else {
-
+          params.value = Buffer.from(params.value);
+          params.value = params.value.toString("base64");
       }
       break;
     
