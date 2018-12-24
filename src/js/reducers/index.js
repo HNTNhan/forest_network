@@ -1,17 +1,5 @@
-import {
-    AUTH,
-    WEBSITE,
-    SYSTEMACTIVE,
-    KEY,
-    SEQUENCE,
-    DATA,
-    USERNAME,
-    FOLLOWINGS,
-    USERPOST,
-    LOGOUT,
-    ENERGY,
-} from "../constants/action-types";
-import { Keypair } from 'stellar-base';
+import { AUTH, WEBSITE, SYSTEMACTIVE, KEY, SEQUENCE, DATA, USERNAME, FOLLOWINGS, USERPOST, LOGOUT, ENERGY,
+    USERPICTURE,} from "../constants/action-types";
 
 const initialState = {
     auth: false,
@@ -21,6 +9,7 @@ const initialState = {
     sequence: 0,
     data: null,
     userName: null,
+    userPicture: null,
     followings: null,
     userPost: null,
     energy: null,
@@ -42,6 +31,8 @@ const rootReducer = (state = initialState, action) => {
             return {...state, data: action.payload};
         case USERNAME:
             return {...state, userName: action.payload};
+        case USERPICTURE:
+            return {...state, userPicture: action.payload};
         case FOLLOWINGS:
             return {...state, followings: action.payload};
         case USERPOST:
