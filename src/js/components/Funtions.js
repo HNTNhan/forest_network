@@ -5,15 +5,15 @@ import moment from 'moment';
 export async function getData(web, pk) {
     let data = [];
     let pages = 0;
-    let per_page = 30;
+    let per_page = 100;
     await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22")
         .then(res => {
             if(res.data.result.total_count === 0) return "Not exist";
-            pages = Math.floor(res.data.result.total_count / 30);
-            if (res.data.result.total_count % 30 > 0) pages = pages + 1;
+            pages = Math.floor(res.data.result.total_count / 100);
+            if (res.data.result.total_count % 100 > 0) pages = pages + 1;
         });
     for (let k = 1 ; k <= pages; k++) {
-        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&page=" + k)
+        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&per_page=100&page=" + k)
             .then(res => {
                 data = data.concat(res.data.result.txs);
             });
@@ -24,14 +24,14 @@ export async function getData(web, pk) {
 export async function getName(web, pk) {
     let name = "No Name";
     let pages = 0;
-    let per_page = 30;
+    let per_page = 100;
     await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22")
         .then(res => {
-            pages = Math.floor(res.data.result.total_count / 30);
-            if (res.data.result.total_count % 30 > 0) pages = pages + 1;
+            pages = Math.floor(res.data.result.total_count / 100);
+            if (res.data.result.total_count % 100 > 0) pages = pages + 1;
         });
     for (let k = pages; k >= 1; k--) {
-        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&page=" + k)
+        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&per_page=100&page=" + k)
             .then(res => {
                 for(let i=res.data.result.txs.length-1; i>=0; i--) {
                     let tx = Buffer.from(res.data.result.txs[i].tx, "base64");
@@ -52,7 +52,7 @@ export async function getName(web, pk) {
     return name;
 }
 
-export async function convertName(pk, list_pk,  list_name, user_name) {
+export async function convertName(pk, list_pk,  list_name, user_name, user_pk) {
     if(list_pk !== null) {
         for(let i=0; i<list_pk.addresses.length; i++) {
             if(pk === list_pk.addresses[i]) {
@@ -60,6 +60,7 @@ export async function convertName(pk, list_pk,  list_name, user_name) {
             }
         }
     }
+    if(pk !== user_pk) return pk;
     return user_name
 }
 

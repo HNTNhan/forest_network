@@ -43,26 +43,32 @@ class LandingPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            tag: "posts",
             energy: 0,
             sequence: 0,
             transictions: 0,
             balance: 0,
+            followings_name: null,
+            others: [],
+            show_others: 0,
             chatBox: false,
             posts: null,
+            show_posts: 0,
+
         };
         this.chatBox = this.chatBox.bind(this);
         this.post = this.post.bind(this);
         this.show_post = this.show_post.bind(this);
         this.reply = this.reply.bind(this);
+        this.others = this.others.bind(this);
+        this.onClickOthers = this.onClickOthers.bind(this);
     }
 
     async componentWillMount(){
         if(!this.props.auth) {
             this.props.history.push(routes.SIGN_IN);
         }
-        const a = await base32.encode(Buffer.from(this.props.keypair.prk));
-        console.log(a);
-        console.log(this.props.userPicture);
+        //const a = await base32.encode(Buffer.from(this.props.keypair.prk));
     }
 
     async componentDidMount() {
@@ -90,7 +96,7 @@ class LandingPage extends Component {
                     hash: data[i].hash,
                     time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
                     user: tx.account,
-                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName),
+                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName, this.props.keypair.pk),
                     content: tx.params.content,
                 });
             }
@@ -150,8 +156,9 @@ class LandingPage extends Component {
         }
 
         this.props.Data(data);
-
+        let limit = this.state.show_posts;
         let posts = [];
+
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
             try {
@@ -161,24 +168,63 @@ class LandingPage extends Component {
                 continue;
             }
             if(tx.operation === "post") {
+                if(limit === 29) { limit = i; continue; }
+                else if(limit > 29) continue;
+                limit++;
                 posts = posts.concat({
                     hash: data[i].hash,
                     time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
                     user: tx.account,
-                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName),
+                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName, this.props.keypair.pk),
                     content: tx.params.content,
                 });
+            }
+            else if(tx.operation === "interact") {
+
+            }
+        }
+
+        let show_posts = [];
+        if(posts.length !== 0) {
+            for (let i = 0; i <= posts.length - 1; i++) {
+                show_posts = show_posts.concat(
+                    <div className="button-post" key={i} id={i}>
+                        <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                            <div className="col-lg-1 col-md-1">
+                                <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                            </div>
+                            <div className="col-lg-11 col-md-11">
+                                <div> {posts[i].user_name}</div>
+                                <div> {posts[i].time}</div>
+                                <div><span> {posts[i].content.text} </span></div>
+                                <button className="reply" title="Reply">
+                                    <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18"
+                                         onClick={this.show_post}/>
+                                    <span><b> </b></span>
+                                </button>
+                                <button className="like" onClick={this.like} title="Like">
+                                    <img src={require("../../image/Heart.ico")} alt="like" width="18"/>
+                                    <span><b> </b></span>
+                                </button>
+                                <button className="share" onClick={this.share} title="Share">
+                                    <img src={require("../../image/Share.ico")} alt="share" width="18"/>
+                                    <span><b> </b></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
             }
         }
 
         this.setState({
+            followings_name: followings_name,
             energy: energy.energy,
-            posts: posts,
+            posts: show_posts,
             transictions: transictions,
             balance: parseFloat(balance/100000000).toFixed(8),
         });
     }
-
     chatBox() {
         this.setState({
            chatBox: true,
@@ -211,6 +257,92 @@ class LandingPage extends Component {
             });
         this.props.Sequence(this.props.sequence++);
         document.getElementById("new-post").value = "";
+    }
+
+    async onClickOthers(){
+        if(!this.state.show_others) {
+            await this.others();
+            this.setState({
+                tag: "others"
+            });
+        }
+        else {
+            if(this.state.tag !== "others") {
+                this.setState({
+                    tag: "others"
+                });
+            }
+        }
+    }
+
+    async others() {
+        let limit = this.state.show_others;
+        let others = [];
+        const data = this.props.data;
+        for(let i=limit; i < data.length; i++) {
+            let tx = Buffer(data[i].tx, "base64");
+            try {
+                tx = decode(tx);
+            }
+            catch(error) {
+                continue;
+            }
+            if(tx.operation !== "post" && tx.operation !== "interact") {
+                limit++;
+                if(limit % 30 === 0 && limit !== 0) break;
+                let content = "";
+                if(tx.operation === "create_account") {
+                    content = tx.account.slice(0, 10) + "... create new account " + tx.params.address.slice(0,10) + "...";
+                }
+                else if(tx.operation === "payment") {
+                    content =  tx.account.slice(0, 10) + "... transfer money to " + tx.params.address.slice(0,10) + "...\namount: " + tx.params.amount;
+                }
+                else if(tx.operation === "update_account") {
+                    if(tx.params.key === "name") {
+                        content =  tx.account.slice(0, 10) + "... change name to " + tx.params.value;
+                    }
+                    else if(tx.params.key === "picture") {
+                        content =  tx.account.slice(0, 10) + "... change picture";
+                    }
+                    else if(tx.params.key === "followings") {
+                        content =  tx.account.slice(0, 10) + "... followed ";
+                        for(let j=0; j<tx.params.value.addresses.length; j++) {
+                            content += tx.params.value.addresses[j].slice(0, 10) + "...,";
+                        }
+
+                    }
+                }
+                others = others.concat({
+                    hash: data[i].hash,
+                    time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
+                    user: tx.account,
+                    user_name: await convertName(tx.account, this.props.followings, this.state.followings_name, this.props.userName, this.props.keypair.pk),
+                    content: content,
+                });
+            }
+        }
+        let show_other = this.state.others;
+        for(let i = 0; i <= others.length - 1; i++) {
+            show_other = show_other.concat(
+                <div className="button-post" key={i + this.state.others.length} id={i}>
+                    <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
+                        <div className="col-lg-1 col-md-1">
+                            <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                        </div>
+                        <div className="col-lg-11 col-md-11">
+                            <div> {others[i].user_name}</div>
+                            <div> {others[i].time}</div>
+                            <div><span> {others[i].content}  </span></div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
+        this.setState({
+            show_others: limit,
+            others: show_other,
+        });
     }
 
     show_post(e) {
@@ -254,39 +386,44 @@ class LandingPage extends Component {
             }
         }
         let posts = [];
+        /*
         if(this.state.posts !== null) {
-            for(let i = 0; i <= this.state.posts.length - 1; i++) {
-                posts = posts.concat(
-                    <div className="button-post" key={i} id={i}>
-                        <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
-                            <div className="col-lg-1 col-md-1">
-                                <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
-                            </div>
-                            <div className="col-lg-11 col-md-11">
-                                <div> {this.state.posts[i].user_name}</div>
-                                <div> {this.state.posts[i].time}</div>
-                                <div><span> {this.state.posts[i].content.text} </span></div>
-                                <button className="reply" title="Reply">
-                                    <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18" onClick={this.show_post}/>
-                                    <span><b> </b></span>
-                                </button>
-                                <button className="like" onClick={this.like} title="Like">
-                                    <img src={require("../../image/Heart.ico")} alt="like" width="18"/>
-                                    <span><b> </b></span>
-                                </button>
-                                <button className="share" onClick={this.share} title="Share">
-                                    <img src={require("../../image/Share.ico")} alt="share" width="18"/>
-                                    <span><b> </b></span>
-                                </button>
+            if(this.state.posts.length <=30){
+                for(let i = 0; i <= this.state.posts.length - 1; i++) {
+                    posts = posts.concat(
+                        <div className="button-post" key={i} id={i}>
+                            <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
+                                <div className="col-lg-1 col-md-1">
+                                    <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                                </div>
+                                <div className="col-lg-11 col-md-11">
+                                    <div> {this.state.posts[i].user_name}</div>
+                                    <div> {this.state.posts[i].time}</div>
+                                    <div><span> {this.state.posts[i].content.text} </span></div>
+                                    <button className="reply" title="Reply">
+                                        <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18" onClick={this.show_post}/>
+                                        <span><b> </b></span>
+                                    </button>
+                                    <button className="like" onClick={this.like} title="Like">
+                                        <img src={require("../../image/Heart.ico")} alt="like" width="18"/>
+                                        <span><b> </b></span>
+                                    </button>
+                                    <button className="share" onClick={this.share} title="Share">
+                                        <img src={require("../../image/Share.ico")} alt="share" width="18"/>
+                                        <span><b> </b></span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )
+                    )
+                }
             }
         }
+        */
 
         return(
-            <div className="container-fluid" onClick={(e)=>{if(e.target.id !== "new-post") this.setState({chatBox: false})}}>
+            <div className="container-fluid" onClick={(e)=>{if(e.target.id !== "new-post") this.setState({chatBox: false})}}
+                 style={{wordWrap: "break-word"}}>
                 <div className="row" style={{ margin: 0,padding: "5px 5%", background: "#e6ecf0"}}>
                     <div className="col-lg-4 col-md-4 col-sm-12" style={{padding: 0, border: "1px solid #e6ecf0"}}>
                         <div style={{background: "white"}}>
@@ -342,20 +479,50 @@ class LandingPage extends Component {
                     </div >
 
                     <div className="col-lg-8 col-md-8" style={{ padding: 0, border: "1px solid #e6ecf0"}}>
-                        <div className="row" style={{ padding: 10 ,margin: 0,background: "#e8f5fd"}}>
-                            <div className="col-lg-1 col-md-1">
-                                <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                        <div style={{textAlign: "center", background: 'white', padding: 5, marginBottom: 2}}>
+                            <div className="row" >
+                                <div className="col-6">
+                                    <button className="button-info" onClick={() => this.setState({tag: "posts"})}>
+                                        <div>Posts</div>
+                                    </button>
+                                </div>
+                                <div className="col-6">
+                                    <button className="button-info" onClick={this.onClickOthers} >
+                                        <div>Other</div>
+                                    </button>
+                                </div>
                             </div>
-                            <div className="col-lg-11 col-sm-11">
+                        </div>
+                        {(this.state.tag === "posts") ?
+                            <div>
+                                <div className="row" style={{ padding: 10 ,margin: 0,background: "#e8f5fd"}}>
+                                    <div className="col-lg-1 col-md-1">
+                                        <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                                    </div>
+                                    <div className="col-lg-11 col-sm-11">
                             <textarea placeholder="Write what you want" rows={(this.state.chatBox)?4:1} id="new-post"
                                       style={{width: "100%", padding: 10, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}
                                       onClick={this.chatBox}/>
-                                <button className="send btn btn-primary" onClick={this.post}>
-                                    Send
-                                </button>
+                                        <button className="send btn btn-primary" onClick={this.post}>
+                                            Send
+                                        </button>
+                                    </div>
+                                </div>
+                                {this.state.posts}
                             </div>
-                        </div>
-                        {posts}
+                            :
+                            <div>
+                                { this.state.others }
+                                {(this.state.show_others < this.props.data.length)?
+                                    <div style={{marginTop: 2}}>
+                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={this.others}>Load More</button>
+                                    </div> :
+                                    <div style={{textAlign: "center", marginTop: 2}}>
+                                        Nothing to load
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
