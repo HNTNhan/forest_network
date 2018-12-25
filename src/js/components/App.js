@@ -3,6 +3,7 @@ import Navigation from './Navigation';
 import * as routes from '../constants/routes';
 import SignInPage from './SignIn';
 import HomePage from './Home';
+import UserProfile from './userprofile'
 import "bootstrap/dist/css/bootstrap.min.css";
 import 'bootstrap';
 //import Popper from 'popper.js';
@@ -89,8 +90,10 @@ class App extends Component {
                         <Route exact path={routes.SIGN_IN} component={SignInPage} />
                         <Route exact path={routes.HOME} component={HomePage} />
                         <Route exact path={routes.ACCOUNT} component={AccountPage} />
+                        <Route exact path='/user' component={UserProfile}></Route>
                     </div>
                 </Router>
+                
             </div>
         );
     }

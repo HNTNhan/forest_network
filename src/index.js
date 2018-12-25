@@ -5,6 +5,12 @@ import store from "./js/store";
 import App from "./js/components/App";
 import { PersistGate } from 'redux-persist/lib/integration/react';
 import "./index.css"
+import "./css/test.css"
+
+
+
+
+
 
 render(
     <Provider store={store.store}>

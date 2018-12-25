@@ -9,6 +9,8 @@ import {decode} from "../transaction";
 import store from "../store"
 import {getData, getEnergy, getLatestBlockTime, getTime} from "./Funtions";
 import base32 from "base32.js"
+import "../../css/singin.css";
+
 
 const mapStateToProps = state => {
     return { auth: state.auth, website: state.website, sequence: state.sequence, keypair: state.key,
@@ -166,7 +168,7 @@ class SignInPage extends Component{
                             <img className="rounded-circle" alt="tree" src={require("../../image/OakTree.png")}
                                  style={{background: "white", width: 32, marginBottom: 5}}/>
                         </div>
-                        <div>Sign in to your account</div>
+                        <div>Sign in your account</div>
                     </div>
                     <div className="form_sign_in">
                         <div className="form-group">
@@ -178,7 +180,7 @@ class SignInPage extends Component{
                                    id="prk" placeholder="Please enter private key" onClick={()=>this.setState({check: true})}/>
                         </div>
                         <div style={{textAlign: "center"}}>
-                            <button type="submit" className="btn btn-dark" style={{width: "100%"}} onClick={this.signIn}>Submit</button>
+                            <button type="submit" className="btn btn-success" style={{width: "100%",background:""}} onClick={this.signIn}>Submit</button>
                             <br/>
                             <div>
                                 Don't have a account?

@@ -186,6 +186,7 @@ class Account extends Component {
                             <div> {post.user_name}</div>
                             <div> {post.time}</div>
                             <div><span> {post.content.text} </span></div>
+                            
                             <button className="reply" title="Reply">
                                 <img id={index} src={require("../../image/Reply.png")} alt="reply" width="18" onClick={this.show_post}/>
                                 <span><b> </b></span>

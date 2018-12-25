@@ -194,10 +194,22 @@ class LandingPage extends Component {
                                 <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                             </div>
                             <div className="col-lg-11 col-md-11">
-                                <div> {posts[i].user_name}</div>
-                                <div> {posts[i].time}</div>
+                            <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>   
+                              
                                 <div><span> {posts[i].content.text} </span></div>
-                                <button className="reply" title="Reply">
+                               <hr></hr>
+                                <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
+                                nCmt
+                                <a href="#" style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={this.like}></a>
+                                Number
+                                <a href="#" style={{textDecoration:"none"}} className="fa fa-thumbs-o-down ml-5" aria-hidden="true"></a>
+                                Number
+                                <a href="#" style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={this.share}></a>
+                                Number
+                                <a href="#" style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true"></a>
+                                Number
+                                <hr></hr>
+                                {/* <button className="reply" title="Reply">
                                     <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18"
                                          onClick={this.show_post}/>
                                     <span><b> </b></span>
@@ -209,7 +221,7 @@ class LandingPage extends Component {
                                 <button className="share" onClick={this.share} title="Share">
                                     <img src={require("../../image/Share.ico")} alt="share" width="18"/>
                                     <span><b> </b></span>
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
@@ -443,7 +455,8 @@ class LandingPage extends Component {
                             </Link>
                             <br/>
                             <div style={{textAlign: "center"}}>
-                                <div style={{fontSize: 24}}><b>{this.props.userName}</b></div>
+                            <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to="/user" style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
+                                {/* <div style={{fontSize: 24}}><b>{this.props.userName}</b></div> */}
                                 <div className="row">
                                     <div className="col-1">
                                     </div>
@@ -476,6 +489,56 @@ class LandingPage extends Component {
                             <div> a </div>
                             <div> b </div>
                         </div>
+                        <div className="">
+                        <div className="float-left">
+                            <div className="row bg-newfeed p-3 mt-1 text-center">
+                                <h5 className="pl-5 ml-4 text-center" >New to Twitter?</h5>
+                                <div className="pl-2 text-center">Sign up now to have your personal timeline!</div> <br />
+                                <button className="ml-4 mt-1 border-customize btn btn-danger font-weight-bold justify-content-sm-center" style={{ width: "270px" }} >Registration</button>
+                            </div>
+
+                            <div className="bg-newfeed pl-3 mt-1">
+                                <div className="">
+                                    <h5> You might also like ·</h5>
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/1.PNG)" }}></div>
+                                        <a href="#" className="ml-1">Chali putt</a>
+                                    </div>
+                                    <br />
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/5l.jpg)" }}></div>
+                                        <a href="#" className="ml-1">Tung oc cho</a>
+                                    </div>
+                                    <br />
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/1.PNG)" }}></div>
+                                        <a href="#" className="ml-1">Son doan ngu</a>
+                                    </div>
+                                    <br />
+
+                                </div>
+                            </div>
+
+                            {/* <!--trend in the world--> */}
+                            <div className="bg-newfeed pl-3 mt-2 pt-2">
+                                <div class="">
+                                    <h5  className=""> Trends in the whole world</h5>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#Happy Monday</a>
+                                    <div className="row text-dark "> 42,5 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#OurEpiphanyJin</a>
+                                    <div class="row text-dark "> 25,5 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1"># 3aralıkdünyaengellilerg the</a>
+                                    <div class="row text-dark "> 141 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#MondayMotivation</a>
+                                    <div class="row text-dark "> 118 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">Alan García</a>
+                                    <div class="row text-dark "> 24,8 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">Paul McCartney</a>
+                                    <div class="row text-dark "> 42,5 N Tweet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     </div >
 
                     <div className="col-lg-8 col-md-8" style={{ padding: 0, border: "1px solid #e6ecf0"}}>
