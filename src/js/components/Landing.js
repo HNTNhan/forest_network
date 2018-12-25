@@ -701,7 +701,7 @@ class LandingPage extends Component {
                                 <div className="row">
                                     <div className="col-lg-4 col-md-4 col-sm-12">
                                         <p style={{margin: 0}}><b>Posts</b></p>
-                                        <p style={{margin: 0, fontSize: 20}}>{this.props.userPost}</p>
+                                        <p style={{margin: 0, fontSize: 20}}>{(this.props.userPost)?this.props.userPost.length:0}</p>
                                     </div>
                                     <div className="col-lg-4 col-md-4 col-sm-12">
                                         <p style={{margin: 0}}><b>Following</b></p>
