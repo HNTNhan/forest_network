@@ -6,8 +6,8 @@ import * as routes from "../constants/routes";
 import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, getArrayLength, removeDuplicate } from "./Funtions";
 import { decode, encode, sign } from "../transaction/index";
 import { data, sequence, userName, followings, userPost, energy, userPicture } from "../actions";
-import { FindFollowingInfor } from './Funtions';
-
+import { FindFollowingInfor, getFollower, removeDuplicateFollower, FindFollowerInfor } from './Funtions';
+const motherAddress = 'GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI';
 //
 class Account extends Component {
     constructor(props) {
@@ -114,7 +114,6 @@ class Account extends Component {
                 FollowingTx.push(tx);
             }
         })
-        console.log(decodeArray);
         //get username of follower.
         let FollowingInfor =[];
         for(let i=0; i < FollowingTx.length; i++) {
@@ -127,12 +126,20 @@ class Account extends Component {
 
             }
         }
-        console.log(FollowingInfor);
     //     let x = await FindFollowerInfor(FollowerTx[0]);
     //   console.log(x);
      
     //get user's avatar.
      //
+     
+     var follower = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+     let distinctFollower = removeDuplicateFollower(follower);
+     console.log(distinctFollower);
+     let followerArray =[];
+     for( let i =0 ; i < distinctFollower.length; i++) {
+         let obj = await FindFollowerInfor(this.props.website, distinctFollower[i] );
+         followerArray.push(obj);
+     }
         let posts = [];
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
@@ -159,7 +166,8 @@ class Account extends Component {
             transictions: transictions,
             balance: parseFloat(balance/100000000).toFixed(8),
             followings_name: followings_name,
-            followingInfor: FollowingInfor
+            followingInfor: FollowingInfor,
+            follower: followerArray
         });
     }
 
@@ -240,51 +248,41 @@ class Account extends Component {
 
             })
         }
-        // let distinctFollower = removeDuplicate(this.state.follower);
+        let distinctFollower = this.state.follower;
+        console.log(distinctFollower);
         // console.log(distinctFollower);
-        // if( distinctFollower!== 0){
-        //     distinctFollower.map(user => {
-        //         if(user !== undefined) {
-        //             follower = follower.concat(
-        //                 <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
-        //                     <div style={{background: "white"}}>
-        //                         <div style={{background: "#1da1f2"}}>
-        //                             <img height="100px"/>
-        //                         </div>
-        //                         <div className="rounded-circle"
-        //                              style={{position: "absolute", background: "#1da1f2",
-        //                                  width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
-        //                             {
-        //                                 user.picture? 
-        //                                 <img alt="avatar" style={{position: "absolute", width: "100%", justifyContent: "center"}} className="rounded-circle" src={"data:image/jpeg/png;base64,"+ user.picture} />
-        //                                 :<img style={{position: "absolute", width: "100%", justifyContent: "center"}} alt="avatar" src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
-        //                             }     
-        //                         </div>
-        //                         <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
-        //                             <div>{user.username}</div>
-        //                             <div>@{user.username? user.username.split(' ').join('') : ''}</div>
-        //                             <div className="row">
-        //                                 <div className="col-4">
-        //                                     <p style={{margin: 0}}>Posts</p>
-        //                                     <p style={{margin: 0, fontSize: 20}}><b>10</b></p>
-        //                                 </div>
-        //                                 <div className="col-4">
-        //                                     <p style={{margin: 0}}>Following</p>
-        //                                     <p style={{margin: 0, fontSize: 20}}><b>3</b></p>
-        //                                 </div>
-        //                                 <div className="col-4">
-        //                                     <p style={{margin: 0}}>Follower</p>
-        //                                     <p style={{margin: 0, fontSize: 18}}><b>4</b></p>
-        //                                 </div>
-        //                             </div>
-        //                         </div>
-        //                         <br/>
-        //                     </div>
-        //                 </div>
-        //             );
-        //         }
-        //     })
-        // }
+        if( distinctFollower.length!== 0){
+            distinctFollower.map(user => {
+                if(user !== undefined) {
+                    follower = follower.concat(
+                        <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
+                            <div style={{background: "white"}}>
+                                <div style={{background: "#1da1f2"}}>
+                                    <img height="100px"/>
+                                </div>
+                                <div className="rounded-circle"
+                                     style={{position: "absolute", background: "#1da1f2",
+                                         width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
+                                    {
+                                        user.picture? 
+                                        <img alt="avatar" style={{position: "absolute", width: "100%", justifyContent: "center"}} className="rounded-circle" src={"data:image/jpeg/png;base64,"+ user.picture} />
+                                        :<img style={{position: "absolute", width: "100%", justifyContent: "center"}} alt="avatar" src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
+                                    }     
+                                </div>
+                                <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
+                                    <div style={{wordWrap: "break-word"}}>{user.username}</div>
+                                    <div style={{wordWrap: "break-word"}}>@{user.username? user.username.split(' ').join('') : ''}</div>
+                                    <div className="row">
+                                        
+                                    </div>
+                                </div>
+                                <br/>
+                            </div>
+                        </div>
+                    );
+                }
+            })
+        }
         const numberFollower = 0;
         console.log(this.props);
         return(
@@ -308,7 +306,7 @@ class Account extends Component {
                         <div className="col-4">
                             <button className="button-info" onClick={() => this.setState({tag: "follower"})}>
                                 <div>Follower</div>
-                                <div>{numberFollower}</div>
+                                <div>{this.state.follower.length? this.state.follower.length: 0}</div>
                             </button>
                         </div>
                     </div>
