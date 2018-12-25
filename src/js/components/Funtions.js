@@ -157,29 +157,32 @@ export async function FindFollowingInfor(website, tx) {
                 catch (err) {
                     console.log(err);
                 }
-    });
-    let username;
-    temp.map( ts =>{
-        if(ts.operation === 'update_account' && ts.params.key ==="name" ){
-          username =  ts.params.value;
-        }
-    });
-                    
-                    picture = ts.params.value;
-                } 
+            })
+            let username;
+            let picture;
+            var address;
+            temp.map( ts =>{
+                if(ts.operation === 'update_account' && ts.params.key ==="name" ){
+                    username =  ts.params.value;
+                }
+                if(ts.operation === 'update_account' && ts.params.key === 'picture') {
 
+                    picture = ts.params.value;
+                }
+
+            })
             address = temp[0].account;
             if(username === undefined) {
                 username = address;
             }
-            
-           arrayUser.push({username, picture});
+
+            arrayUser.push({username, picture});
         }
-        
-       return arrayUser;
-   
+
+        return arrayUser;
+
     } else {
-        
+
         let temp = [];
         let result = await getData(website, tx.params.value.addresses[0]);
         result.map(dt => {
@@ -197,22 +200,22 @@ export async function FindFollowingInfor(website, tx) {
         temp.map( ts =>{
             if(ts.operation === 'update_account' && ts.params.key ==="name" ){
                 console.log(ts);
-              username =  ts.params.value;
+                username =  ts.params.value;
             }
             if(ts.operation === 'update_account' && ts.params.key === 'picture') {
-                
+
                 picture = ts.params.value;
             }
         })
-         
+
         return {
             username,
             picture
         };
     }
-   
-  
-}  
+
+
+}
 
 export const getArrayLength = (arr) =>  {
     let count = 0;
