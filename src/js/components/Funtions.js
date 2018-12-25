@@ -119,13 +119,13 @@ export async function FindFollowerInfor(tx) {
         catch (err) {
             console.log(err);
         }
-    })
+    });
     let username;
     temp.map( ts =>{
         if(ts.operation === 'update_account' && ts.params.key ==="name" ){
           username =  ts.params.value;
         }
-    })
+    });
     return username;
     
     
