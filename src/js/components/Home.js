@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {sign, encode, decode} from '../transaction/index';
+import {sign, encode, decode,hash} from '../transaction/index';
 import { Keypair } from 'stellar-base';
 import {compose} from "redux";
 import {getTime, getEnergy, getData, convertName, getLatestBlockTime} from "./Funtions";
@@ -25,14 +25,327 @@ class Homepage extends Component {
             img64: "",
         };
         this.data = this.data.bind(this);
-        this.onFormSubmit = this.onFormSubmit.bind(this);
+        //this.onFormSubmit = this.onFormSubmit.bind(this);
         this.getFiles = this.getFiles.bind(this);
     }
     //GCT5H6TEK7Q43EYJI6NWZ4DPGZXQUNFLW6VWD5EM4VSLUDNUA3AJNIKP
     //SDW4K7XQUERXDUJFJQFRPFF2XDE7IKBZGXWECCS2FYFE5AKDZO66XBFV
     async data(){
+        /*
+        const PlainTextContent = vstruct([
+            { name: 'type', type: vstruct.UInt8 },
+            { name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
+        ]);
 
+        const ReactContent = vstruct([
+            { name: 'type', type: vstruct.UInt8 },
+            { name: 'reaction', type: vstruct.UInt8 },
+        ]);
 
+        let a = {
+          type: 1,
+          text: "1231313123"
+        };
+        a = PlainTextContent.encode(a);
+        a = ReactContent.decode(a);
+        console.log(a);
+        /*
+        const Followings = vstruct([
+            { name: 'addresses', type: vstruct.VarArray(vstruct.UInt16BE, vstruct.Buffer(35)) },
+        ]);
+        let value =  Buffer.from({
+        type: "Buffer",
+            data: [
+            0,
+            8,
+            48,
+            29,
+            196,
+            246,
+            55,
+            129,
+            233,
+            90,
+            185,
+            161,
+            28,
+            51,
+            40,
+            204,
+            34,
+            230,
+            137,
+            178,
+            33,
+            94,
+            245,
+            178,
+            14,
+            230,
+            70,
+            83,
+            10,
+            41,
+            122,
+            141,
+            195,
+            51,
+            36,
+            12,
+            40,
+            48,
+            24,
+            161,
+            67,
+            82,
+            152,
+            182,
+            213,
+            188,
+            135,
+            102,
+            21,
+            1,
+            79,
+            236,
+            120,
+            98,
+            29,
+            239,
+            19,
+            134,
+            164,
+            147,
+            14,
+            120,
+            198,
+            245,
+            206,
+            193,
+            113,
+            34,
+            111,
+            186,
+            220,
+            239,
+            48,
+            127,
+            183,
+            60,
+            244,
+            200,
+            183,
+            25,
+            12,
+            148,
+            210,
+            241,
+            94,
+            207,
+            236,
+            32,
+            27,
+            168,
+            107,
+            199,
+            196,
+            30,
+            60,
+            32,
+            141,
+            51,
+            67,
+            67,
+            219,
+            162,
+            184,
+            33,
+            234,
+            37,
+            206,
+            48,
+            21,
+            122,
+            161,
+            123,
+            232,
+            151,
+            248,
+            68,
+            37,
+            64,
+            46,
+            44,
+            49,
+            192,
+            175,
+            18,
+            161,
+            238,
+            3,
+            177,
+            163,
+            132,
+            197,
+            146,
+            179,
+            98,
+            155,
+            95,
+            241,
+            95,
+            245,
+            228,
+            1,
+            197,
+            48,
+            113,
+            8,
+            59,
+            48,
+            178,
+            6,
+            224,
+            235,
+            26,
+            249,
+            32,
+            162,
+            74,
+            69,
+            112,
+            235,
+            237,
+            219,
+            96,
+            238,
+            13,
+            132,
+            72,
+            220,
+            82,
+            21,
+            46,
+            229,
+            30,
+            131,
+            171,
+            149,
+            140,
+            88,
+            48,
+            47,
+            85,
+            225,
+            52,
+            195,
+            71,
+            232,
+            40,
+            199,
+            87,
+            10,
+            102,
+            115,
+            151,
+            86,
+            233,
+            255,
+            169,
+            56,
+            239,
+            43,
+            58,
+            37,
+            168,
+            116,
+            112,
+            9,
+            58,
+            142,
+            61,
+            157,
+            237,
+            195,
+            240,
+            48,
+            135,
+            34,
+            116,
+            169,
+            99,
+            105,
+            41,
+            126,
+            136,
+            19,
+            170,
+            43,
+            53,
+            117,
+            191,
+            80,
+            108,
+            133,
+            241,
+            181,
+            188,
+            237,
+            49,
+            247,
+            248,
+            35,
+            21,
+            94,
+            142,
+            224,
+            177,
+            82,
+            230,
+            107,
+            48,
+            167,
+            211,
+            250,
+            100,
+            87,
+            225,
+            205,
+            147,
+            9,
+            71,
+            155,
+            108,
+            240,
+            111,
+            54,
+            111,
+            10,
+            52,
+            171,
+            183,
+            171,
+            97,
+            244,
+            140,
+            229,
+            100,
+            186,
+            13,
+            180,
+            6,
+            192,
+            150,
+            161,
+            79
+        ]
+        });
+        value = Followings.decode(value);
+        for(let i =0; i<value.addresses.length; i++) {
+            value.addresses[i] = base32.encode(value.addresses[i]);
+        }
+        console.log(value);
+        /*
         let balance = 0;
         let bandwidthTime = 0;
         let bandwidth = 0;
@@ -46,6 +359,8 @@ class Homepage extends Component {
             catch(error) {
                 continue;
             }
+            console.log(tx.params);
+            console.log(hash(tx));
             if(tx.operation === "payment") {
                 if(tx.account === "GCT5H6TEK7Q43EYJI6NWZ4DPGZXQUNFLW6VWD5EM4VSLUDNUA3AJNIKP") {
                     balance -= parseInt(tx.params.amount);
@@ -73,15 +388,15 @@ class Homepage extends Component {
         let time = await getLatestBlockTime("https://komodo.forest.network");
         const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
         console.log(energy);
-        /*
+        */
         axios.get("https://komodo.forest.network/tx_search?query=%22account=%27" + public_key + "%27%22")
             .then(res => {
-                let tx = Buffer(res.data.result.txs[0].tx, "base64");
+                let tx = Buffer(res.data.result.txs[28].tx, "base64");
                 console.log(tx);
                 tx = decode(tx);
                 console.log(tx);
-                const s = Buffer.from(public_key, "utf8");
-                console.log(s.toString());
+                //const s = Buffer.from(public_key, "utf8");
+                //console.log(s.toString());
                 //console.log(PlainTextContent.decode(tx.params.content));
                 //const key = Keypair.fromSecret("SA23VEEUONZLTXME42JMJ2ULWREKISYTPZUJKL4ADW2HZCNREJZOBOSM");
                 //console.log(key.publicKey());
@@ -89,7 +404,6 @@ class Homepage extends Component {
         //GB6GCNFCPYWPHBPVUARS4ANCTNLVDT726AXIQMPXPQVQMYWRN223BBIG
         //SA23VEEUONZLTXME42JMJ2ULWREKISYTPZUJKL4ADW2HZCNREJZOBOSM
 
-           */
         /*
         const PlainTextContent = vstruct([
             { name: 'type', type: vstruct.UInt8 },
@@ -109,28 +423,20 @@ class Homepage extends Component {
             Buffer.from(base32.decode("GCZRPJNYGLR4VD3HROBGDUF4IIS32DAF5FNBRFRHUD4QCDE5ZKTEB37B")),
             Buffer.from(base32.decode("GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI"))];
 
-
+           */
+        /*
         const tx = {
             version: 1,
-            account: public_key,
-            sequence: 12,
+            account: "GCT5H6TEK7Q43EYJI6NWZ4DPGZXQUNFLW6VWD5EM4VSLUDNUA3AJNIKP",
+            sequence: 25,
             memo: Buffer.alloc(0),
-            operation: 'update_account',
+            operation: 'interact',
             params: {
-                key: 'followings',
-                value: {
-                    addresses: addresses
+                object: 'AC489D70EDD851BA12E8563A507253758818DF91169495EC968729013546F34B',
+                content: {
+                    type: 1,
+                    text: 'comment',
                 }
-                //key: 'name',
-                //value: 'HNTN',
-                //address: "GCT5H6TEK7Q43EYJI6NWZ4DPGZXQUNFLW6VWD5EM4VSLUDNUA3AJNIKP",
-                //amount: 50000000,
-
-                //content: {
-                 //   type: 1,
-                //    text: "Ăn quả nhớ kẻ trồng cây.",
-                //},
-                //keys: [],
             },
         };
         console.log(tx);
@@ -147,7 +453,7 @@ class Homepage extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-            */
+
     }
 
     onFormSubmit(e){
@@ -29127,8 +29433,8 @@ class Homepage extends Component {
         //console.log(a);
         const tx = {
             version: 1,
-            account: public_key,
-            sequence: 16,
+            account: "GBNVADH6GARCNM5G4DBWK27D5SI6GIUC24VERZ3Q5VR5P53T7MJRUGRQ",
+            sequence: 6,
             memo: Buffer.alloc(0),
             operation: 'update_account',
             params: {
@@ -29137,7 +29443,8 @@ class Homepage extends Component {
             }
         };
         console.log(tx);
-        sign(tx, 'SDW4K7XQUERXDUJFJQFRPFF2XDE7IKBZGXWECCS2FYFE5AKDZO66XBFV');
+        console.log(123);
+        sign(tx, 'SBGO2YJ5L3CXGWGLRQKGWUOSS5QS2D2WQCM6HQ6VNDQY6E4SBWFFPJAV');
         console.log(tx);
         //const etx = encode(tx).toString('hex');
         let dataEncoded = encode(tx).toString('base64');

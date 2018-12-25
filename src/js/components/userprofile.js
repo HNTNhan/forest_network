@@ -63,8 +63,8 @@ class UserProfile extends Component {
 
                 <div id="content" className="row mt-0">
                     <div className="col-3 float-left" >
-                        <h5 className="UserName mb-3 font-weight-bold" title="user-name">{user.username}</h5>
-                        <div className="row mb-2 " title="description"><i className="fab fa-accessible-icon mr-1 mt-1"></i>user.description</div>
+                        <h5 className="UserName mb-3 font-weight-bold" title="user-name">user.username</h5>
+                        <div className="row mb-2 " title="description"><i className="fa fa-address-book-o mr-1 mt-1"></i>user.description</div>
                         <div className="row mb-2 " title="Location"><i className="fa fa-home mr-1 mt-1" aria-hidden="true"></i>user.location</div>
                         <div className="row mb-2" title="Times of register"><i className="fa fa-calendar mr-1 mt-1" aria-hidden="true"></i>Involved  6th February, 2018</div>
                         <div className="row mb-2" title="school"><i className="fa fa-graduation-cap mr-1 mt-1" aria-hidden="true"></i>user.school</div>

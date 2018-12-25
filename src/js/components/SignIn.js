@@ -14,7 +14,7 @@ import "../../css/singin.css";
 
 const mapStateToProps = state => {
     return { auth: state.auth, website: state.website, sequence: state.sequence, keypair: state.key,
-        followings: state.followings, userName:state.userName, userPicture: state.userPicture};
+        followings: state.followings, userName:state.userName, userPicture: state.userPicture, systemActive: state.systemActive};
 };
 
 
@@ -42,6 +42,11 @@ class SignInPage extends Component{
 
 
     componentWillMount() {
+        setTimeout(()=>{
+            console.log(this.props.website);
+            console.log(this.props.systemActive);
+        }, 1000);
+
         //if(this.props.auth === true) this.props.history.push(routes.LANDING);
     }
 

@@ -10,3 +10,4 @@ export const USERPICTURE = "USERPICTURE";
 export const FOLLOWINGS = "FOLLOWINGS";
 export const USERPOST = "USERPOST";
 export const ENERGY = "ENERGY";
+export const FOLLOWER = "FOLLOWER";

@@ -7,6 +7,7 @@ import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, 
 import { decode, encode, sign } from "../transaction/index";
 import { data, sequence, userName, followings, userPost, energy, userPicture } from "../actions";
 import { FindFollowingInfor } from './Funtions';
+
 //
 class Account extends Component {
     constructor(props) {
@@ -152,7 +153,6 @@ class Account extends Component {
             }
         }
        
-       
         this.setState({
             energy: energy.energy,
             posts: posts,
@@ -183,7 +183,22 @@ class Account extends Component {
                             {/* <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/> */}
                         </div>
                         <div className="col-lg-11 col-md-11">
-                            <div> {post.user_name}</div>
+                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts.user_name} </Link> {posts.time}</span>   
+                              
+                              <div><span> {posts.content.text} </span></div>
+                             <hr></hr>
+                              <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
+                              nCmt
+                              <a href="#" style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={this.like}></a>
+                              Number
+                              <a href="#" style={{textDecoration:"none"}} className="fa fa-thumbs-o-down ml-5" aria-hidden="true"></a>
+                              Number
+                              <a href="#" style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={this.share}></a>
+                              Number
+                              <a href="#" style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true"></a>
+                              Number
+                              <hr></hr>
+                            {/* <div> {post.user_name}</div>
                             <div> {post.time}</div>
                             <div><span> {post.content.text} </span></div>
                             
@@ -198,16 +213,14 @@ class Account extends Component {
                             <button className="share" onClick={this.share} title="Share">
                                 <img src={require("../../image/Share.ico")} alt="share" width="18"/>
                                 <span><b> </b></span>
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 </div>
                 )
             })
         } 
-        console.log(this.state.followingInfor);
           let distinctFollowing = removeDuplicate(this.state.followingInfor);
-        console.log(distinctFollowing);
         if(distinctFollowing !== undefined ) {
            distinctFollowing.map((person, index) => {
                if(person.username !== undefined) {
@@ -229,8 +242,8 @@ class Account extends Component {
                             <br/>
                             <div style={{textAlign: "left", paddingLeft: 5, fontSize: 14, height: 100}}>
                             <div></div>
-                                <div>{person.username}</div>
-                                <div>@{person.username.split(' ').join('') || null}</div>
+                                <div style={{wordWrap: "break-word"}}> {person.username}</div>
+                                <div style={{wordWrap: "break-word"}}>@{person.username.split(' ').join('') || null}</div>
                                 {/* <div>45th President of the United States of America</div> */}
                             </div>
                             <br/>
