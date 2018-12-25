@@ -10,7 +10,7 @@ import {
     USERPOST,
     LOGOUT,
     ENERGY,
-    USERPICTURE,
+    USERPICTURE, FOLLOWER,
 } from "../constants/action-types";
 
 export const auth = bool => ({ type: AUTH, payload: bool });
@@ -25,4 +25,6 @@ export const userPicture = string => ({ type: USERPICTURE, payload: string });
 export const followings = array => ({ type: FOLLOWINGS, payload: array });
 export const userPost = array => ({ type: USERPOST, payload: array });
 export const energy = object => ({ type: ENERGY, payload: object });
+export const follower = object => ({ type: FOLLOWER, payload: object });
+
 

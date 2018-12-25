@@ -32,10 +32,7 @@ const PostParams = vstruct([
   { name: 'keys', type: vstruct.VarArray(vstruct.UInt8, vstruct.Buffer(42)) },
 ]);
 
-const PlainTextContent = vstruct([
-    { name: 'type', type: vstruct.UInt8 },
-    { name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
-]);
+
 
 const UpdateAccountParams = vstruct([
   { name: 'key', type: vstruct.VarString(vstruct.UInt8) },
@@ -53,6 +50,11 @@ const InteractParams = vstruct([
   // Depend on object on parent object keys. First 16 bytes of content are nonce/iv
   { name: 'content', type: vstruct.VarBuffer(vstruct.UInt16BE) },
   // React if '', like, love, haha, anrgy, sad, wow
+]);
+
+const PlainTextContent = vstruct([
+    { name: 'type', type: vstruct.UInt8 },
+    { name: 'text', type: vstruct.VarString(vstruct.UInt16BE) },
 ]);
 
 const ReactContent = vstruct([
@@ -113,10 +115,21 @@ export function encode(tx) {
       break;
 
     case 'interact':
-      params = InteractParams.encode({
-        ...tx.params,
-        object: Buffer.from(tx.params.object, 'hex'),
-      });
+        if(tx.params.content.type === 1) {
+            params = InteractParams.encode({
+                ...tx.params,
+                object: Buffer.from(tx.params.object, 'hex'),
+                content: PlainTextContent.encode(tx.params.content),
+            });
+        }
+        else if (tx.params.content.type === 2) {
+            params = InteractParams.encode({
+                ...tx.params,
+                object: Buffer.from(tx.params.object, 'hex'),
+                content: ReactContent.encode(tx.params.content),
+            });
+        }
+
       operation = 5;
       break;
 
@@ -184,6 +197,13 @@ export function decode(data) {
       operation = 'interact';
       params = InteractParams.decode(tx.params);
       params.object = params.object.toString('hex').toUpperCase();
+      let temp = PlainTextContent.decode(params.content);
+      if(temp.type === 1) {
+            params.content = PlainTextContent.decode(params.content);
+      }
+      else if(temp.type === 2) {
+          params.content = ReactContent.decode(params.content);
+      }
       break;
     
     default:

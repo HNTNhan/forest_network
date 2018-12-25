@@ -1,5 +1,7 @@
-import { AUTH, WEBSITE, SYSTEMACTIVE, KEY, SEQUENCE, DATA, USERNAME, FOLLOWINGS, USERPOST, LOGOUT, ENERGY,
-    USERPICTURE,} from "../constants/action-types";
+import {
+    AUTH, WEBSITE, SYSTEMACTIVE, KEY, SEQUENCE, DATA, USERNAME, FOLLOWINGS, USERPOST, LOGOUT, ENERGY,
+    USERPICTURE, FOLLOWER,
+} from "../constants/action-types";
 
 const initialState = {
     auth: false,
@@ -11,7 +13,8 @@ const initialState = {
     userName: null,
     userPicture: null,
     followings: null,
-    userPost: null,
+    follower: null,
+    userPost: 0,
     energy: null,
 };
 
@@ -35,6 +38,8 @@ const rootReducer = (state = initialState, action) => {
             return {...state, userPicture: action.payload};
         case FOLLOWINGS:
             return {...state, followings: action.payload};
+        case FOLLOWER:
+            return {...state, follower: action.payload};
         case USERPOST:
             return {...state, userPost: action.payload};
         case ENERGY:

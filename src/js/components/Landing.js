@@ -3,9 +3,9 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import * as routes from "../constants/routes";
 import connect from "react-redux/es/connect/connect";
-import {data, sequence, userName, followings, userPost, energy, userPicture} from "../actions";
+import {data, sequence, userName, followings, follower,userPost, energy, userPicture} from "../actions";
 import axios from "axios";
-import {decode, encode, sign} from "../transaction/index";
+import {decode, encode, sign, hash} from "../transaction/index";
 import {getData, getName, convertName, getTime, getEnergy, getLatestBlockTime} from "./Funtions";
 import store from "../store";
 import base32 from "base32.js"
@@ -17,6 +17,7 @@ const mapDispatchToProps = dispatch => {
         UserName: string => dispatch(userName(string)),
         UserPicture: string => dispatch(userPicture(string)),
         Followings: array => dispatch(followings(array)),
+        Follower: array => dispatch(follower(array)),
         UserPost: array => dispatch(userPost(array)),
         Energy: object => dispatch(energy(object)),
     };
@@ -35,6 +36,7 @@ const mapStateToProps = state => {
         followings: state.followings,
         userPost: state.userPost,
         energy: state.energy,
+        follower: state.follower,
     };
 };
 
@@ -54,14 +56,16 @@ class LandingPage extends Component {
             chatBox: false,
             posts: null,
             show_posts: 0,
-
+            all_account_data: [],
         };
         this.chatBox = this.chatBox.bind(this);
         this.post = this.post.bind(this);
         this.show_post = this.show_post.bind(this);
         this.reply = this.reply.bind(this);
-        this.others = this.others.bind(this);
+        this.showOthers = this.showOthers.bind(this);
+        this.showPosts = this.showPosts.bind(this);
         this.onClickOthers = this.onClickOthers.bind(this);
+
     }
 
     async componentWillMount(){
@@ -73,7 +77,7 @@ class LandingPage extends Component {
 
     async componentDidMount() {
         let followings_name = [];
-        let user_post = [];
+        let user_post = 0;
         let data = await getData(this.props.website, this.props.keypair.pk);
 
         let balance = this.props.energy.balance;
@@ -92,13 +96,7 @@ class LandingPage extends Component {
                 continue;
             }
             if(tx.operation === "post") {
-                user_post = await user_post.concat({
-                    hash: data[i].hash,
-                    time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
-                    user: tx.account,
-                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName, this.props.keypair.pk),
-                    content: tx.params.content,
-                });
+                user_post++;
             }
             if (i>= this.props.energy.pos) {
                 if(tx.operation === "payment") {
@@ -156,8 +154,10 @@ class LandingPage extends Component {
         }
 
         this.props.Data(data);
+
         let limit = this.state.show_posts;
         let posts = [];
+        let all_account = [];
 
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
@@ -167,9 +167,15 @@ class LandingPage extends Component {
             catch(error) {
                 continue;
             }
+            if(limit === 15) { limit = i }
+            if(tx.account === "GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI" && tx.operation === "create_account") {
+                if(tx.params.address === this.props.keypair.pk && all_account[all_account.length-1] === this.props.keypair.pk) {
+                    continue
+                }
+                all_account = all_account.concat(tx.params.address);
+            }
             if(tx.operation === "post") {
-                if(limit === 29) { limit = i; continue; }
-                else if(limit > 29) continue;
+                if(limit>=15) continue;
                 limit++;
                 posts = posts.concat({
                     hash: data[i].hash,
@@ -177,14 +183,136 @@ class LandingPage extends Component {
                     user: tx.account,
                     user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName, this.props.keypair.pk),
                     content: tx.params.content,
+                    reaction: {
+                        like: 0,
+                        love: 0,
+                        haha: 0,
+                        wow: 0,
+                        sad: 0,
+                        angry: 0,
+                    },
+                    reply: [],
                 });
-            }
-            else if(tx.operation === "interact") {
-
             }
         }
 
+        let all_account_data = [];
+        let all_follower = [];
+
+        for(let i=0; i<all_account.length; i++) {
+            getData(this.props.website, all_account[i])
+                .then(temp_data =>{
+                    all_account_data = all_account_data.concat(temp_data);
+                    for(let j = temp_data.length-1; j>=0; j--) {
+                        let tx = Buffer(temp_data[j].tx, "base64");
+                        try {
+                            tx = decode(tx);
+                        }
+                        catch(error) {
+                            continue;
+                        }
+                        if(tx.operation === "update_account" && tx.params.key === "followings") {
+                            for(let k=0; k<=tx.params.value.addresses.length; k++) {
+                                if(tx.params.value.addresses[k] === this.props.keypair.pk) {
+                                    all_follower = all_follower.concat(all_account[i]);
+                                }
+                            }
+                            break;
+                        }
+                        let reaction = false;
+                        for(let l =0; l<posts.length; l++) {
+                            if(tx.operation === "interact" && tx.params.object === posts[l].hash)
+                            {
+                                if(tx.params.content.type === 1) {
+                                    posts[l].reply =  posts[l].reply.concat({
+                                        hash: temp_data[j].hash,
+                                        block_height: temp_data[j].height,
+                                        content: tx.params.content.text,
+                                        account: tx.account,
+                                    })
+                                }
+                                else if(tx.params.content.type === 2 && reaction === false) {
+                                    reaction = true;
+                                    switch (tx.params.content.reaction) {
+                                        case 1:
+                                            posts[l].reaction.like++;
+                                            break;
+                                        case 2:
+                                            posts[l].reaction.love++;
+                                            break;
+                                        case 3:
+                                            posts[l].reaction.haha++;
+                                            break;
+                                        case 4:
+                                            posts[l].reaction.wow++;
+                                            break;
+                                        case 5:
+                                            posts[l].reaction.sad++;
+                                            break;
+                                        case 6:
+                                            posts[l].reaction.angry++;
+                                            break;
+                                        default:
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        }
+        if(limit <= 16) limit = data.length;
         let show_posts = [];
+        setTimeout(async ()=>{
+            this.props.Follower(all_follower);
+            console.log(all_account_data);
+            await this.setState({
+                posts: [],
+                show_posts: 0,
+                all_account_data: all_account_data,
+            });
+            await this.showPosts();
+            /*
+            show_posts = [];
+            if(posts.length !== 0) {
+                for (let i = 0; i <= posts.length - 1; i++) {
+                    show_posts = show_posts.concat(
+                        <div className="button-post" key={i} id={i}>
+                            <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                                <div className="col-lg-1 col-md-1">
+                                    <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                                </div>
+                                <div className="col-lg-11 col-md-11">
+                                    <div> {posts[i].user_name}</div>
+                                    <div> {posts[i].time}</div>
+                                    <div><span> {posts[i].content.text} </span></div>
+                                    <button className="reply" title="Reply">
+                                        <img id={"rely-" + posts[i].hash} src={require("../../image/Reply.png")} alt="reply" width="18"
+                                             onClick={this.show_post}/>
+                                        {posts[i].reply.length}
+                                        <span><b> </b></span>
+                                    </button>
+                                    <button className="like" onClick={this.like} title="Like">
+                                        <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
+                                        <span><b> </b></span>
+                                    </button>
+                                    <button className="share" onClick={this.share} title="Share">
+                                        <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
+                                        <span><b> </b></span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+            }
+
+            this.setState({
+                posts: show_posts,
+                all_account_data: all_account_data,
+            });
+            */
+        }, 5000);
+
         if(posts.length !== 0) {
             for (let i = 0; i <= posts.length - 1; i++) {
                 show_posts = show_posts.concat(
@@ -198,16 +326,17 @@ class LandingPage extends Component {
                                 <div> {posts[i].time}</div>
                                 <div><span> {posts[i].content.text} </span></div>
                                 <button className="reply" title="Reply">
-                                    <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18"
+                                    <img id={"rely-" + posts[i].hash} src={require("../../image/Reply.png")} alt="reply" width="18"
                                          onClick={this.show_post}/>
+                                    {posts[i].reply.length}
                                     <span><b> </b></span>
                                 </button>
                                 <button className="like" onClick={this.like} title="Like">
-                                    <img src={require("../../image/Heart.ico")} alt="like" width="18"/>
+                                    <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
                                     <span><b> </b></span>
                                 </button>
                                 <button className="share" onClick={this.share} title="Share">
-                                    <img src={require("../../image/Share.ico")} alt="share" width="18"/>
+                                    <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
                                     <span><b> </b></span>
                                 </button>
                             </div>
@@ -222,46 +351,60 @@ class LandingPage extends Component {
             energy: energy.energy,
             posts: show_posts,
             transictions: transictions,
+            show_posts: limit,
             balance: parseFloat(balance/100000000).toFixed(8),
         });
     }
+
     chatBox() {
         this.setState({
            chatBox: true,
         });
     }
 
-    post() {
+    async post() {
         if(document.getElementById("new-post").value === "") { alert("Please write something"); return; }
+        let sequence = this.props.sequence;
         const tx = {
             version: 1,
             account: this.props.keypair.pk,
-            sequence: this.props.sequence,
+            sequence: sequence,
             memo: Buffer.alloc(0),
             operation: 'post',
             params: {
                 content: {
-                   type: 1,
+                    type: 1,
                     text: document.getElementById("new-post").value,
                 },
                 keys: [],
             },
         };
-        sign(tx, this.props.keypair.prk);
+        sign(tx, base32.encode(Buffer.from(this.props.keypair.prk)));
         const etx = encode(tx).toString('hex');
-        axios.post('https://komodo.forest.network/broadcast_tx_commit?tx=0x' + etx)
+
+        await axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
             .then(function (response) {
             })
             .catch(function (error) {
                 console.log(error);
             });
-        this.props.Sequence(this.props.sequence++);
+        let posts = this.props.userPost;
+        this.props.Sequence(sequence+1);
+        this.props.UserPost(posts+1);
+        this.setState({
+            transictions: this.state.transictions+1,
+        });
         document.getElementById("new-post").value = "";
+        await this.setState({
+            posts: [],
+            show_posts: 0,
+        });
+        await this.componentDidMount();
     }
 
     async onClickOthers(){
         if(!this.state.show_others) {
-            await this.others();
+            await this.showOthers();
             this.setState({
                 tag: "others"
             });
@@ -275,11 +418,12 @@ class LandingPage extends Component {
         }
     }
 
-    async others() {
-        let limit = this.state.show_others;
+    async showOthers() {
+        let pos = this.state.show_others;
+        let limit = 0;
         let others = [];
         const data = this.props.data;
-        for(let i=limit; i < data.length; i++) {
+        for(let i=pos; i < data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
             try {
                 tx = decode(tx);
@@ -289,7 +433,10 @@ class LandingPage extends Component {
             }
             if(tx.operation !== "post" && tx.operation !== "interact") {
                 limit++;
-                if(limit % 30 === 0 && limit !== 0) break;
+                if(limit % 30 === 0 && limit !== 0) {
+                    pos = i;
+                    break;
+                }
                 let content = "";
                 if(tx.operation === "create_account") {
                     content = tx.account.slice(0, 10) + "... create new account " + tx.params.address.slice(0,10) + "...";
@@ -320,11 +467,15 @@ class LandingPage extends Component {
                     content: content,
                 });
             }
+            if(i === data.length-1) {
+                if(limit<=30) pos = data.length;
+            }
         }
+
         let show_other = this.state.others;
         for(let i = 0; i <= others.length - 1; i++) {
             show_other = show_other.concat(
-                <div className="button-post" key={i + this.state.others.length} id={i}>
+                <div className="button-post" key={i + this.state.others.length} id={others[i].hash}>
                     <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
                         <div className="col-lg-1 col-md-1">
                             <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
@@ -340,38 +491,161 @@ class LandingPage extends Component {
         }
 
         this.setState({
-            show_others: limit,
+            show_others: pos,
             others: show_other,
         });
     }
 
-    show_post(e) {
-        let posts = this.state.posts;
-        posts[e.target.id].show = true;
+    async showPosts(){
+        let pos = this.state.show_posts;
+        let limit = 0;
+        let posts = [];
+        const data = this.props.data;
+        for(let i=pos; i < data.length; i++) {
+            let tx = Buffer(data[i].tx, "base64");
+            try {
+                tx = decode(tx);
+            }
+            catch(error) {
+                continue;
+            }
+            if(tx.operation === "post") {
+                limit++;
+                if(limit % 15 === 0 && limit !== 0) {
+                    pos = i;
+                    break;
+                }
+                posts = posts.concat({
+                    hash: data[i].hash,
+                    time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
+                    user: tx.account,
+                    user_name: await convertName(tx.account, this.props.followings, this.state.followings_name, this.props.userName, this.props.keypair.pk),
+                    content: tx.params.content,
+                    reaction: {
+                        like: 0,
+                        love: 0,
+                        haha: 0,
+                        wow: 0,
+                        sad: 0,
+                        angry: 0,
+                    },
+                    reply: [],
+                });
+            }
+            if(i === data.length-1) {
+                if(limit<=15) pos = data.length;
+            }
+        }
+        const temp_data = this.state.all_account_data;
+        for(let j = temp_data.length-1; j>=0; j--) {
+            let tx = Buffer(temp_data[j].tx, "base64");
+            try {
+                tx = decode(tx);
+            }
+            catch(error) {
+                continue;
+            }
+            let reaction = false;
+            for(let l =0; l<posts.length; l++) {
+                if(tx.operation === "interact" && tx.params.object === posts[l].hash)
+                {
+                    if(tx.params.content.type === 1) {
+                        posts[l].reply =  posts[l].reply.concat({
+                            hash: temp_data[j].hash,
+                            block_height: temp_data[j].height,
+                            content: tx.params.content.text,
+                            account: tx.account,
+                        })
+                    }
+                    else if(tx.params.content.type === 2 && reaction === false) {
+                        switch (tx.params.content.reaction) {
+                            case 1:
+                                posts[l].reaction.like++;
+                                break;
+                            case 2:
+                                posts[l].reaction.love++;
+                                break;
+                            case 3:
+                                posts[l].reaction.haha++;
+                                break;
+                            case 4:
+                                posts[l].reaction.wow++;
+                                break;
+                            case 5:
+                                posts[l].reaction.sad++;
+                                break;
+                            case 6:
+                                posts[l].reaction.angry++;
+                                break;
+                            default:
+                        }
+                    }
+                }
+            }
+        }
+
+        let show_posts = this.state.posts;
+        for(let i = 0; i <= posts.length - 1; i++) {
+            show_posts = show_posts.concat(
+                <div className="button-post" key={i} id={i}>
+                    <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                        <div className="col-lg-1 col-md-1">
+                            <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                        </div>
+                        <div className="col-lg-11 col-md-11">
+                            <div> {posts[i].user_name}</div>
+                            <div> {posts[i].time}</div>
+                            <div><span> {posts[i].content.text} </span></div>
+                            <button className="reply" title="Reply">
+                                <img id={"rely-" + posts[i].hash} src={require("../../image/Reply.png")} alt="reply" width="18"
+                                     onClick={this.show_post}/>
+                                {posts[i].reply.length}
+                                <span><b> </b></span>
+                            </button>
+                            <button className="like" onClick={this.like} title="Like">
+                                <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
+                                <span><b> </b></span>
+                            </button>
+                            <button className="share" onClick={this.share} title="Share">
+                                <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
+                                <span><b> </b></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
         this.setState({
-            posts: posts
-        })
+            show_posts: pos,
+            posts: show_posts,
+        });
     }
 
-    reply(stt) {
-        let reply = [];
-        for(let i =0; i<this.state.posts[stt].reply.length; i++)
-        {
-            reply = reply.concat(
-                <div key={i} className="row" style={{ padding: 10 , margin: "1px 0", background: "white"}}>
-                    <div className="col-1">
-                        <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
-                    </div>
-                    <div className="col">
-                        <div> {this.state.posts[stt].reply[i].user} </div>
-                        <div> {this.state.posts[stt].reply[i].content} </div>
-                    </div>
-              </div>)
-        }
-        return reply;
+    show_post(e) {
+        console.log(e.target.id);
+    }
+
+    reply() {
+
     }
 
     like() {
+
+    }
+    love() {
+
+    }
+    haha() {
+
+    }
+    wow() {
+
+    }
+    sad() {
+
+    }
+    angry() {
 
     }
 
@@ -386,40 +660,6 @@ class LandingPage extends Component {
             }
         }
         let posts = [];
-        /*
-        if(this.state.posts !== null) {
-            if(this.state.posts.length <=30){
-                for(let i = 0; i <= this.state.posts.length - 1; i++) {
-                    posts = posts.concat(
-                        <div className="button-post" key={i} id={i}>
-                            <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
-                                <div className="col-lg-1 col-md-1">
-                                    <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
-                                </div>
-                                <div className="col-lg-11 col-md-11">
-                                    <div> {this.state.posts[i].user_name}</div>
-                                    <div> {this.state.posts[i].time}</div>
-                                    <div><span> {this.state.posts[i].content.text} </span></div>
-                                    <button className="reply" title="Reply">
-                                        <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18" onClick={this.show_post}/>
-                                        <span><b> </b></span>
-                                    </button>
-                                    <button className="like" onClick={this.like} title="Like">
-                                        <img src={require("../../image/Heart.ico")} alt="like" width="18"/>
-                                        <span><b> </b></span>
-                                    </button>
-                                    <button className="share" onClick={this.share} title="Share">
-                                        <img src={require("../../image/Share.ico")} alt="share" width="18"/>
-                                        <span><b> </b></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                }
-            }
-        }
-        */
 
         return(
             <div className="container-fluid" onClick={(e)=>{if(e.target.id !== "new-post") this.setState({chatBox: false})}}
@@ -459,13 +699,17 @@ class LandingPage extends Component {
 
                                 <br/>
                                 <div className="row">
-                                    <div className="col-lg-6 col-md-6 col-sm-6">
+                                    <div className="col-lg-4 col-md-4 col-sm-12">
                                         <p style={{margin: 0}}><b>Posts</b></p>
-                                        <p style={{margin: 0, fontSize: 20}}>{(this.props.userPost) ? this.props.userPost.length: 0 }</p>
+                                        <p style={{margin: 0, fontSize: 20}}>{(this.props.userPost)?this.props.userPost.length:0}</p>
                                     </div>
-                                    <div className="col-lg-6 col-md-6 col-sm-6">
+                                    <div className="col-lg-4 col-md-4 col-sm-12">
                                         <p style={{margin: 0}}><b>Following</b></p>
                                         <p style={{margin: 0, fontSize: 20}}>{(this.props.followings) ?this.props.followings.addresses.length : 0}</p>
+                                    </div>
+                                    <div className="col-lg- col-md-4 col-sm-12">
+                                        <p style={{margin: 0}}><b>Following</b></p>
+                                        <p style={{margin: 0, fontSize: 20}}>{(this.props.follower) ?this.props.follower.length : 0}</p>
                                     </div>
                                 </div>
                             </div>
@@ -509,13 +753,22 @@ class LandingPage extends Component {
                                     </div>
                                 </div>
                                 {this.state.posts}
+                                {(this.props.data !== null)?(this.state.show_posts < this.props.data.length)?
+                                    <div style={{marginTop: 2}}>
+                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={this.showPosts}>Load More</button>
+                                    </div> :
+                                    <div style={{textAlign: "center", marginTop: 2}}>
+                                        Nothing to load
+                                    </div>
+                                    : null
+                                }
                             </div>
                             :
                             <div>
                                 { this.state.others }
                                 {(this.state.show_others < this.props.data.length)?
                                     <div style={{marginTop: 2}}>
-                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={this.others}>Load More</button>
+                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={this.showOthers}>Load More</button>
                                     </div> :
                                     <div style={{textAlign: "center", marginTop: 2}}>
                                         Nothing to load
