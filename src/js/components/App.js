@@ -36,43 +36,46 @@ class App extends Component {
         this.statusWebsite =this.statusWebsite.bind(this);
     }
 
-    async statusWebsite(){
+    statusWebsite(){
         let website = [];
-        await axios.get('https://komodo.forest.network/')
+        axios.get('https://komodo.forest.network/')
             .then(function (response) {
                 website = website.concat('https://komodo.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
             });
-        await axios.get('https://zebra.forest.network/')
+        axios.get('https://zebra.forest.network/')
             .then(function (response){
-                website = website.concat('https://komodo.forest.network/');
+                website = website.concat('https://zebra.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
             });
-        await axios.get('https://dragonfly.forest.network/')
+        axios.get('https://dragonfly.forest.network/')
             .then(function (response) {
-                website = website.concat('https://komodo.forest.network/');
+                website = website.concat('https://dragonfly.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
             });
-        await axios.get('https://gorilla.forest.network/')
+        axios.get('https://gorilla.forest.network/')
             .then(function (response) {
-                website = website.concat('https://komodo.forest.network/');
+                website = website.concat('https://gorilla.forest.network/');
             }).catch(function (error) {
-                website = website.concat('');
-            });
-        let number = 0;
-        for(let i=0; i < website.length; i++) {
-            if(website[i] !== '') {
-                number++;
-                if(number===1) this.props.website(website[i]);
+            website = website.concat('');
+        });
+
+        setTimeout(()=>{
+            let number = 0;
+            for(let i=0; i < website.length; i++) {
+                if(website[i] !== '') {
+                    number++;
+                    if(number===1) this.props.website(website[i]);
+                }
             }
-        }
-        if(number >= 3) this.props.systemActive(true);
+            if(number >= 3) this.props.systemActive(true);
+        }, 500);
     }
 
     render() {
