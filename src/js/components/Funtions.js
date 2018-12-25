@@ -141,14 +141,11 @@ export async function getEnergy(balance, bandwidthTime, bandwidth, txSize, curre
 
 // }
 export async function FindFollowingInfor(website, tx) {
-    console.log(tx);
     var numOfFollower = await tx.params.value.addresses.length;
-    console.log(numOfFollower);
     if(numOfFollower > 1) {
         let arrayUser = [];
         for(let i = 0 ; i < numOfFollower; i++ ){
             let temp = [];
-            console.log(tx.params.value.addresses[i]);
             let result = await getData(website, tx.params.value.addresses[i]);
             result.map(dt => {
                 let tx = Buffer(dt.tx, 'base64');
@@ -162,17 +159,22 @@ export async function FindFollowingInfor(website, tx) {
             })
             let username;
             let picture;
-            console.log(temp);
+            var address;
             temp.map( ts =>{
                 if(ts.operation === 'update_account' && ts.params.key ==="name" ){
-                    console.log(ts);
-                  username =  ts.params.value;
+                    username =  ts.params.value;
                 }
                 if(ts.operation === 'update_account' && ts.params.key === 'picture') {
                     
                     picture = ts.params.value;
-                }
+                } 
+
             })
+            address = temp[0].account;
+            if(username === undefined) {
+                username = address;
+            }
+            
            arrayUser.push({username, picture});
         }
         
@@ -192,7 +194,6 @@ export async function FindFollowingInfor(website, tx) {
                 console.log(err);
             }
         })
-        console.log(temp);
         let username;
         let picture;
         temp.map( ts =>{
@@ -228,6 +229,7 @@ export const  removeDuplicate = (array) => {
     let set = new Set();
     let unique = []
     array.map((v, index) => {
+        console.log(v);
         if(set.has(v.username) || v.username === undefined) {
             return false;
         } else {
@@ -235,8 +237,6 @@ export const  removeDuplicate = (array) => {
             unique.push(v);
         }
     })
-    console.log(set);
-    console.log(unique);
     return unique;
-   
 }
+

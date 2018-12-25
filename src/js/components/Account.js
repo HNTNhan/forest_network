@@ -7,6 +7,7 @@ import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, 
 import { decode, encode, sign } from "../transaction/index";
 import { data, sequence, userName, followings, userPost, energy, userPicture } from "../actions";
 import { FindFollowingInfor } from './Funtions';
+
 //
 class Account extends Component {
     constructor(props) {
@@ -152,7 +153,6 @@ class Account extends Component {
             }
         }
        
-       
         this.setState({
             energy: energy.energy,
             posts: posts,
@@ -204,9 +204,7 @@ class Account extends Component {
                 )
             })
         } 
-        console.log(this.state.followingInfor);
           let distinctFollowing = removeDuplicate(this.state.followingInfor);
-        console.log(distinctFollowing);
         if(distinctFollowing !== undefined ) {
            distinctFollowing.map((person, index) => {
                if(person.username !== undefined) {
@@ -228,8 +226,8 @@ class Account extends Component {
                             <br/>
                             <div style={{textAlign: "left", paddingLeft: 5, fontSize: 14, height: 100}}>
                             <div></div>
-                                <div>{person.username}</div>
-                                <div>@{person.username.split(' ').join('') || null}</div>
+                                <div style={{wordWrap: "break-word"}}> {person.username}</div>
+                                <div style={{wordWrap: "break-word"}}>@{person.username.split(' ').join('') || null}</div>
                                 {/* <div>45th President of the United States of America</div> */}
                             </div>
                             <br/>
