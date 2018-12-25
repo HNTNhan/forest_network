@@ -225,6 +225,7 @@ export const getArrayLength = (arr) =>  {
     })
     return count;
 }
+//remove duplicate following.
 export const  removeDuplicate = (array) => {
     let set = new Set();
     let unique = []
@@ -240,3 +241,120 @@ export const  removeDuplicate = (array) => {
     return unique;
 }
 
+export const removeDuplicateFollower = (array) => {
+    let set = new Set();
+    let unique = []
+    array.map((v, index) => {
+        console.log(v);
+        if(set.has(v)){
+            return false;
+        } else {
+            set.add(v);
+            unique.push(v);
+        }
+    })
+    return unique;
+}
+
+export async function getFollower(website, motherAddress, currentUserAddress) {
+    //get all mother transaction.
+    let data = await getData(website, motherAddress);
+    var allAccount = [];
+    for(let i=0; i<data.length; i++) {
+        let tx = Buffer(data[i].tx, "base64");
+        try {
+            tx = decode(tx);
+            if(tx.account === motherAddress) {
+                allAccount.push(tx);
+            }
+        }
+        catch(error) {
+            continue;
+        }
+    }
+
+    //get all account created account by mother account
+    let allUserAccout = [];
+    allAccount.map(tx => {
+        if(tx.operation === 'create_account') {
+            allUserAccout.push(tx.params.address);
+        }
+    })
+    //with each accout read and decode all transaction for each account.
+    let allAccountTx = []
+
+    for(let i = 0 ; i < allUserAccout.length; i ++) {
+        let result = await getData(website, allUserAccout[i]);
+        allAccountTx.push(result)
+    }
+    var followMethod = [];
+    for(let i = 0 ; i < allAccountTx.length; i++) {
+        allAccountTx[i].map(tx => {
+            let txs = Buffer(tx.tx, "base64");
+            try {
+                txs = decode(txs);
+                if(txs.operation === 'update_account' && txs.params.key === 'followings'){
+                    let address = txs.account;
+                    let followingAddess = txs.params.value.addresses
+                    let obj = {
+                        address,
+                        followingAddess
+                    }
+                    followMethod.push(obj)
+                }
+            }
+            catch(error) {
+                console.log(error);;
+            }
+        })
+    }
+    console.log(currentUserAddress);
+    let followingAddress = [];
+    followMethod.map(tx => {
+        tx.followingAddess.map(address => {
+
+            if(address === currentUserAddress){
+                console.log(true);
+                followingAddress.push(tx.address)
+
+            }
+        })
+    })
+    return followingAddress;
+}
+
+export async function FindFollowerInfor(website, address) {
+        let temp = [];
+        let result = await getData(website, address);
+        result.map(dt => {
+            let tx = Buffer(dt.tx, 'base64');
+            try {
+                tx = decode(tx);
+                temp.push(tx);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        })
+        let username;
+        let picture;
+        let addresss;
+        temp.map( ts =>{
+            if(ts.operation === 'update_account' && ts.params.key ==="name" ){
+              username =  ts.params.value;
+            }
+            if(ts.operation === 'update_account' && ts.params.key === 'picture') {
+                
+                picture = ts.params.value;
+            }
+            addresss = ts.account;
+        })
+        if(username === undefined) {
+            username =  addresss;
+        }
+         
+        return {
+            username,
+            picture
+        };
+}  
