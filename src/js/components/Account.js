@@ -3,11 +3,12 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import connect from "react-redux/es/connect/connect";
 import * as routes from "../constants/routes";
-import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, getArrayLength, removeDuplicate } from "./Funtions";
+import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, getArrayLength, removeDuplicate, getFollower, removeDuplicateFollower } from "./Funtions";
 import { decode, encode, sign } from "../transaction/index";
 import { data, sequence, userName, followings, userPost, energy, userPicture } from "../actions";
-import { FindFollowingInfor, getFollower, removeDuplicateFollower, FindFollowerInfor } from './Funtions';
-const motherAddress = 'GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI';
+import { FindFollowingInfor , FindFollowerInfor} from './Funtions';
+const motherAddress ='GAO4J5RXQHUVVONBDQZSRTBC42E3EIK66WZA5ZSGKMFCS6UNYMZSIDBI';
+
 //
 class Account extends Component {
     constructor(props) {
@@ -131,15 +132,19 @@ class Account extends Component {
      
     //get user's avatar.
      //
-     
-     var follower = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
-     let distinctFollower = removeDuplicateFollower(follower);
-     console.log(distinctFollower);
-     let followerArray =[];
-     for( let i =0 ; i < distinctFollower.length; i++) {
-         let obj = await FindFollowerInfor(this.props.website, distinctFollower[i] );
-         followerArray.push(obj);
+     let followerArray = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+     console.log(followerArray);
+     var distinctFollowerArray = removeDuplicateFollower(followerArray);
+     console.log(distinctFollowerArray);
+     let followerDetail = []
+     for( let i = 0; i < distinctFollowerArray.length; i++){
+         let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+         followerDetail.push(result);
      }
+     console.log(followerDetail);
+
+
+     ///
         let posts = [];
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
@@ -167,7 +172,7 @@ class Account extends Component {
             balance: parseFloat(balance/100000000).toFixed(8),
             followings_name: followings_name,
             followingInfor: FollowingInfor,
-            follower: followerArray
+            follower: followerDetail
         });
     }
 
@@ -248,11 +253,9 @@ class Account extends Component {
 
             })
         }
-        let distinctFollower = this.state.follower;
-        console.log(distinctFollower);
-        // console.log(distinctFollower);
-        if( distinctFollower.length!== 0){
-            distinctFollower.map(user => {
+        var followers = this.state.follower;
+        if( followers.length !== 0){
+            followers.map(user => {
                 if(user !== undefined) {
                     follower = follower.concat(
                         <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
@@ -273,7 +276,7 @@ class Account extends Component {
                                     <div style={{wordWrap: "break-word"}}>{user.username}</div>
                                     <div style={{wordWrap: "break-word"}}>@{user.username? user.username.split(' ').join('') : ''}</div>
                                     <div className="row">
-                                        
+                                       
                                     </div>
                                 </div>
                                 <br/>
