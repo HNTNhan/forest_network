@@ -105,3 +105,28 @@ export async function getEnergy(balance, bandwidthTime, bandwidth, txSize, curre
 
     return { energy: (bandwidthLimit-bandwidth).toFixed(0), bandwidth: bandwidth};
 }
+
+export async function FindFollowerInfor(tx) {
+    let url = 'https://komodo.forest.network/';
+    let temp = [];
+    let result = await getData(url, tx.params.value.addresses[0]);
+    result.map(dt => {
+        let tx = Buffer(dt.tx, 'base64');
+        try {
+            tx = decode(tx);
+            temp.push(tx);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    })
+    let username;
+    temp.map( ts =>{
+        if(ts.operation === 'update_account' && ts.params.key ==="name" ){
+          username =  ts.params.value;
+        }
+    })
+    return username;
+    
+    
+}  
