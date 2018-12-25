@@ -3,9 +3,9 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import connect from "react-redux/es/connect/connect";
 import * as routes from "../constants/routes";
-import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime } from "./Funtions";
+import { getData, getName, convertName, getTime, getEnergy, getLatestBlockTime, getArrayLength } from "./Funtions";
 import { decode, encode, sign } from "../transaction/index";
-import { data, sequence, userName, followings, userPost, energy } from "../actions";
+import { data, sequence, userName, followings, userPost, energy, userPicture } from "../actions";
 import { FindFollowerInfor } from './Funtions';
 //
 class Account extends Component {
@@ -105,7 +105,7 @@ class Account extends Component {
                 }
             }
         }
-
+        console.log(decodeArray);
         //
         var FollowerTx = [];
         decodeArray.map(tx => {
@@ -119,12 +119,12 @@ class Account extends Component {
             let temp = await FindFollowerInfor(FollowerTx[i]);
             FollowerInfor.push(temp);
         }
+        console.log(FollowerInfor);
     //     let x = await FindFollowerInfor(FollowerTx[0]);
     //   console.log(x);
-    console.log(FollowerInfor);
      
-      
-        //
+    //get user's avatar.
+     //
         let posts = [];
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
@@ -168,7 +168,12 @@ class Account extends Component {
                     <div className="button-post" key={index} id={index}>
                     <div className="row" style={{ padding: 10 , margin: "1px 0", background: "#f5f8fa"}}>
                         <div className="col-lg-1 col-md-1">
-                            <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                            {
+                                this.props.userPicture ? 
+                                <img style={{width: 36}} className="rounded-circle" src={"data:image/jpeg/png;base64,"+ this.props.userPicture} alt="User Picture"/>
+                                :<img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                            }
+                            {/* <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/> */}
                         </div>
                         <div className="col-lg-11 col-md-11">
                             <div> {post.user_name}</div>
@@ -222,46 +227,51 @@ class Account extends Component {
 
             })
         }
-        
-        if(this.state.follower.length !== 0) {
+        console.log(this.state.follower.length);
+
+        if(this.state.follower.length !== 0){
             this.state.follower.map(username => {
-                follower = follower.concat(
-                    <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
-                        <div style={{background: "white"}}>
-                            <div style={{background: "#1da1f2"}}>
-                                <img height="100px"/>
-                            </div>
-                            <div className="rounded-circle"
-                                 style={{position: "absolute", background: "#1da1f2",
-                                     width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
-                                <img style={{position: "absolute", width: "100%", justifyContent: "center"}}
-                                     src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
-                            </div>
-                            <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
-                                <div>{username}</div>
-                                <div>@{username.split(' ').join('')}</div>
-                                <div className="row">
-                                    <div className="col-4">
-                                        <p style={{margin: 0}}>Posts</p>
-                                        <p style={{margin: 0, fontSize: 20}}><b>10</b></p>
-                                    </div>
-                                    <div className="col-4">
-                                        <p style={{margin: 0}}>Following</p>
-                                        <p style={{margin: 0, fontSize: 20}}><b>3</b></p>
-                                    </div>
-                                    <div className="col-4">
-                                        <p style={{margin: 0}}>Follower</p>
-                                        <p style={{margin: 0, fontSize: 18}}><b>4</b></p>
+                if(username !== undefined) {
+                    follower = follower.concat(
+                        <div className="col-6" style={{padding: 0, marginRight: 0,  border: "1px solid #e6ecf0"}}>
+                            <div style={{background: "white"}}>
+                                <div style={{background: "#1da1f2"}}>
+                                    <img height="100px"/>
+                                </div>
+                                <div className="rounded-circle"
+                                     style={{position: "absolute", background: "#1da1f2",
+                                         width: 75, height: 75, top: 50, left: 15, border: "3px solid white"}}>
+                                         
+                                    <img style={{position: "absolute", width: "100%", justifyContent: "center"}}
+                                         src={require("../../image/UserIcon.ico")} className="rounded-circle"/>
+                                </div>
+                                <div style={{textAlign: "center", paddingLeft: 5, fontSize: 14, height: 100}}>
+                                    <div>{username}</div>
+                                    <div>@{username? username.split(' ').join('') : ''}</div>
+                                    <div className="row">
+                                        <div className="col-4">
+                                            <p style={{margin: 0}}>Posts</p>
+                                            <p style={{margin: 0, fontSize: 20}}><b>10</b></p>
+                                        </div>
+                                        <div className="col-4">
+                                            <p style={{margin: 0}}>Following</p>
+                                            <p style={{margin: 0, fontSize: 20}}><b>3</b></p>
+                                        </div>
+                                        <div className="col-4">
+                                            <p style={{margin: 0}}>Follower</p>
+                                            <p style={{margin: 0, fontSize: 18}}><b>4</b></p>
+                                        </div>
                                     </div>
                                 </div>
+                                <br/>
                             </div>
-                            <br/>
                         </div>
-                    </div>
-                );
+                    );
+                }
             })
         }
-
+        const numberFollower = getArrayLength(this.state.follower);
+        console.log(this.props);
         return(
             <div className="container-fluid">
                 <div className="row" style={{ margin: 0,padding: "5px 5%", background: "white"}}>
@@ -283,7 +293,7 @@ class Account extends Component {
                         <div className="col-4">
                             <button className="button-info" onClick={() => this.setState({tag: "follower"})}>
                                 <div>Follower</div>
-                                <div>{this.state.follower.length}</div>
+                                <div>{numberFollower}</div>
                             </button>
                         </div>
                     </div>
@@ -299,8 +309,14 @@ class Account extends Component {
                 <div className="row" style={{ margin: 0,padding: "5px 5%", background: "#e6ecf0"}}>
                     <div className="col-3" style={{padding: 0}}>
                         <div style={{textAlign: "center"}}>
-                            <div>{this.props.userName}</div>
-                            <div>Balance: {this.props.energy.balance} TRE</div>
+                        {
+                            this.props.userPicture !== null ? 
+                            <img style={{width: 100, height:100}} className="rounded-circle" src={"data:image/jpeg/png;base64,"+ this.props.userPicture} alt="User Picture"/>
+                            : (<img src={require("../../image/UserIcon.ico")} alt=""/> ) 
+                        }
+                        {/* <img src={require("../../image/UserIcon.ico")} alt=""/> */}
+                            <div style= {{ fontWeight: 'bold' }}>{this.props.userName}</div>
+                            <div style={{fontWeight: 'bold'}}>Balance: {this.props.energy.balance} TRE</div>
                             {/* <div>Joined November 2015</div> */}
                             <br/>
                         </div>
@@ -337,12 +353,14 @@ class Account extends Component {
 }
 
 const mapStateToProps = state =>{
+    console.log(state.UserPicture);
     return {
         keypair: state.key,
         website: state.website,
         energy: state.energy,
         followings: state.followings,
         userName: state.userName,
+        userPicture: state.userPicture,
     }
 }
 
@@ -354,6 +372,8 @@ const mapDispatchToProps = dispatch => {
         Followings: array => dispatch(followings(array)),
         UserPost: array => dispatch(userPost(array)),
         Energy: object => dispatch(energy(object)),
+        UserPicture: string => dispatch(userPicture(string)),
+
     };
 };
 export default compose(

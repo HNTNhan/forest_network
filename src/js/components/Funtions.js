@@ -114,6 +114,7 @@ export async function FindFollowerInfor(tx) {
         let tx = Buffer(dt.tx, 'base64');
         try {
             tx = decode(tx);
+            // console.log(tx);
             temp.push(tx);
         }
         catch (err) {
@@ -126,7 +127,16 @@ export async function FindFollowerInfor(tx) {
           username =  ts.params.value;
         }
     })
+     
     return username;
-    
-    
 }  
+
+export const getArrayLength = (arr) =>  {
+    let count = 0;
+    arr.map(element => {
+        if(element !== undefined) {
+            count ++;
+        }
+    })
+    return count;
+}
