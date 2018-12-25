@@ -5,15 +5,15 @@ import moment from 'moment';
 export async function getData(web, pk) {
     let data = [];
     let pages = 0;
-    let per_page = 100;
+    let per_page = 30;
     await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22")
         .then(res => {
             if(res.data.result.total_count === 0) return "Not exist";
-            pages = Math.floor(res.data.result.total_count / 100);
-            if (res.data.result.total_count % 100 > 0) pages = pages + 1;
+            pages = Math.floor(res.data.result.total_count / 30);
+            if (res.data.result.total_count % 30 > 0) pages = pages + 1;
         });
     for (let k = 1 ; k <= pages; k++) {
-        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&per_page=100&page=" + k)
+        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&page=" + k)
             .then(res => {
                 data = data.concat(res.data.result.txs);
             });
@@ -24,14 +24,14 @@ export async function getData(web, pk) {
 export async function getName(web, pk) {
     let name = "No Name";
     let pages = 0;
-    let per_page = 100;
+    let per_page = 30;
     await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22")
         .then(res => {
-            pages = Math.floor(res.data.result.total_count / 100);
-            if (res.data.result.total_count % 100 > 0) pages = pages + 1;
+            pages = Math.floor(res.data.result.total_count / 30);
+            if (res.data.result.total_count % 30 > 0) pages = pages + 1;
         });
     for (let k = pages; k >= 1; k--) {
-        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&per_page=100&page=" + k)
+        await axios.get(web + "/tx_search?query=%22account=%27" + pk + "%27%22&page=" + k)
             .then(res => {
                 for(let i=res.data.result.txs.length-1; i>=0; i--) {
                     let tx = Buffer.from(res.data.result.txs[i].tx, "base64");
@@ -52,7 +52,7 @@ export async function getName(web, pk) {
     return name;
 }
 
-export async function convertName(pk, list_pk,  list_name, user_name, user_pk) {
+export async function convertName(pk, list_pk,  list_name, user_name) {
     if(list_pk !== null) {
         for(let i=0; i<list_pk.addresses.length; i++) {
             if(pk === list_pk.addresses[i]) {
@@ -60,7 +60,6 @@ export async function convertName(pk, list_pk,  list_name, user_name, user_pk) {
             }
         }
     }
-    if(pk !== user_pk) return pk;
     return user_name
 }
 
@@ -226,6 +225,7 @@ export const getArrayLength = (arr) =>  {
     })
     return count;
 }
+//remove duplicate following.
 export const  removeDuplicate = (array) => {
     let set = new Set();
     let unique = []
@@ -241,3 +241,120 @@ export const  removeDuplicate = (array) => {
     return unique;
 }
 
+export const removeDuplicateFollower = (array) => {
+    let set = new Set();
+    let unique = []
+    array.map((v, index) => {
+        console.log(v);
+        if(set.has(v)){
+            return false;
+        } else {
+            set.add(v);
+            unique.push(v);
+        }
+    })
+    return unique;
+}
+
+export async function getFollower(website, motherAddress, currentUserAddress) {
+    //get all mother transaction.
+    let data = await getData(website, motherAddress);
+    var allAccount = [];
+    for(let i=0; i<data.length; i++) {
+        let tx = Buffer(data[i].tx, "base64");
+        try {
+            tx = decode(tx);
+            if(tx.account === motherAddress) {
+                allAccount.push(tx);
+            }
+        }
+        catch(error) {
+            continue;
+        }
+    }
+
+    //get all account created account by mother account
+    let allUserAccout = [];
+    allAccount.map(tx => {
+        if(tx.operation === 'create_account') {
+            allUserAccout.push(tx.params.address);
+        }
+    })
+    //with each accout read and decode all transaction for each account.
+    let allAccountTx = []
+
+    for(let i = 0 ; i < allUserAccout.length; i ++) {
+        let result = await getData(website, allUserAccout[i]);
+        allAccountTx.push(result)
+    }
+    var followMethod = [];
+    for(let i = 0 ; i < allAccountTx.length; i++) {
+        allAccountTx[i].map(tx => {
+            let txs = Buffer(tx.tx, "base64");
+            try {
+                txs = decode(txs);
+                if(txs.operation === 'update_account' && txs.params.key === 'followings'){
+                    let address = txs.account;
+                    let followingAddess = txs.params.value.addresses
+                    let obj = {
+                        address,
+                        followingAddess
+                    }
+                    followMethod.push(obj)
+                }
+            }
+            catch(error) {
+                console.log(error);;
+            }
+        })
+    }
+    console.log(currentUserAddress);
+    let followingAddress = [];
+    followMethod.map(tx => {
+        tx.followingAddess.map(address => {
+
+            if(address === currentUserAddress){
+                console.log(true);
+                followingAddress.push(tx.address)
+
+            }
+        })
+    })
+    return followingAddress;
+}
+
+export async function FindFollowerInfor(website, address) {
+        let temp = [];
+        let result = await getData(website, address);
+        result.map(dt => {
+            let tx = Buffer(dt.tx, 'base64');
+            try {
+                tx = decode(tx);
+                temp.push(tx);
+            }
+            catch (err) {
+                console.log(err);
+            }
+        })
+        let username;
+        let picture;
+        let addresss;
+        temp.map( ts =>{
+            if(ts.operation === 'update_account' && ts.params.key ==="name" ){
+              username =  ts.params.value;
+            }
+            if(ts.operation === 'update_account' && ts.params.key === 'picture') {
+                
+                picture = ts.params.value;
+            }
+            addresss = ts.account;
+        })
+        if(username === undefined) {
+            username =  addresss;
+        }
+         
+        return {
+            username,
+            picture
+        };
+}  
