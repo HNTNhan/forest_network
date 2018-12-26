@@ -198,7 +198,7 @@ class Account extends Component {
                         <div className="col-lg-11 col-md-11">
                         <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts.user_name} </Link> {posts.time}</span>   
                               
-                              <div><span> {posts.content.text} </span></div>
+                              <div><span> {(posts.content) ? posts.content.text : null} </span></div>
                              <hr></hr>
                               <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
                               nCmt

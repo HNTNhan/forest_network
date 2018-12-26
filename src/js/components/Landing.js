@@ -64,7 +64,8 @@ class LandingPage extends Component {
         this.showOthers = this.showOthers.bind(this);
         this.showPosts = this.showPosts.bind(this);
         this.onClickOthers = this.onClickOthers.bind(this);
-        this.reply = this.reply.bind(this);
+        this.onClickReply = this.onClickReply.bind(this);
+        this.newComment = this.newComment.bind(this);
         this.reaction = this.reaction.bind(this);
     }
 
@@ -72,13 +73,12 @@ class LandingPage extends Component {
         if(!this.props.auth) {
             this.props.history.push(routes.SIGN_IN);
         }
-        console.log(123);
         //const a = await base32.encode(Buffer.from(this.props.keypair.prk));
     }
 
     async componentDidMount() {
         let followings_name = [];
-        let user_post = 0;
+        let user_post = [];
         let data = await getData(this.props.website, this.props.keypair.pk);
 
         let balance = this.props.energy.balance;
@@ -97,7 +97,13 @@ class LandingPage extends Component {
                 continue;
             }
             if(tx.operation === "post") {
-                user_post++;
+                user_post = await user_post.concat({
+                    hash: data[i].hash,
+                    time: new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, data[i].height)),
+                    user: tx.account,
+                    user_name: await convertName(tx.account, this.props.followings, followings_name, this.props.userName),
+                    content: tx.params.content,
+                });
             }
             if (i>= this.props.energy.pos) {
                 if(tx.operation === "payment") {
@@ -274,7 +280,7 @@ class LandingPage extends Component {
             await this.showPosts();
         }, 5000);
 
-        if(posts.length !== 0) {
+        {/*if(posts.length !== 0) {
             for (let i = 0; i <= posts.length - 1; i++) {
                 show_posts = show_posts.concat(
                     <div className="button-post" key={i} id={i}>
@@ -286,7 +292,6 @@ class LandingPage extends Component {
                                 <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
 
                                 <div><span> {posts[i].content.text} </span></div>
-                                <hr/>
                                 <a href="#" id={"rely-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
                                     {posts[i].reply.length}
                                 </a>
@@ -311,13 +316,20 @@ class LandingPage extends Component {
                                 <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(6)}>
                                     {posts[i].reaction.angry}
                                 </a>
-                                <hr/>
+                            </div>
+                            <div className="col-auto"> </div>
+                            <div className="col-lg-11 col-sm-11">
+                                 <textarea placeholder="Comment what you want" rows="1" id="new-comment"
+                                           style={{width: "100%", padding: 2, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}/>
+                                <button id={"comment-" + posts[i].hash} className="send btn btn-primary" onClick={this.newComment}>
+                                    Send
+                                </button>
                             </div>
                         </div>
                     </div>
                 )
             }
-        }
+        }*/}
 
         this.setState({
             followings_name: followings_name,
@@ -566,11 +578,9 @@ class LandingPage extends Component {
                             <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                         </div>
                         <div className="col-lg-11 col-md-11">
-                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>   
-                              
+                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
                               <div><span> {posts[i].content.text} </span></div>
-                            <hr/>
-                              <a href="#" id={"rely-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
+                              <a href="#" id={"reply-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
                                   {posts[i].reply.length}
                               </a>
                               <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
@@ -594,7 +604,14 @@ class LandingPage extends Component {
                                 <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(6, e)}}>
                                     {posts[i].reaction.angry}
                                 </a>
-                              <hr/>
+                        </div>
+                        <div className="col-auto"> </div>
+                        <div className="col-lg-11 col-sm-11">
+                             <textarea placeholder="Comment what you want" rows="1" id="new-comment"
+                                       style={{width: "100%", padding: 2, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}/>
+                            <button id={"comment-" + posts[i].hash} className="send btn btn-primary" onClick={this.newComment}>
+                                Send
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -611,20 +628,60 @@ class LandingPage extends Component {
         console.log(e.target.id);
     }
 
-    reply() {
+    onClickReply() {
 
     }
 
-    async reaction(type, e) {
-        //console.log(e.target.innerHTML);
+    async newComment(e) {
+        if(document.getElementById("new-comment").value === "") { alert("Please write something"); return; }
+        let sequence = this.props.sequence;
         let object = e.target.id;
-        console.log(e.target.id);
+        console.log(object);
         object = object.slice(e.target.id.indexOf("-")+1);
         console.log(object);
         const tx = {
             version: 1,
             account: this.props.keypair.pk,
-            sequence: this.props.sequence,
+            sequence: sequence,
+            memo: Buffer.alloc(0),
+            operation: 'interact',
+            params: {
+                object: object,
+                content: {
+                    type: 1,
+                    text: document.getElementById("new-comment").value,
+                }
+            },
+        };
+        sign(tx, base32.encode(Buffer.from(this.props.keypair.prk)));
+        const etx = encode(tx).toString('hex');
+
+        await axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
+            .then(function (response) {
+                console.log(response);
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        document.getElementById("reply-" + object).innerHTML++;
+        sequence = sequence +1;
+        this.props.Sequence(sequence);
+        this.setState({
+            transictions: this.state.transictions+1,
+        });
+        document.getElementById("new-comment").value = "";
+    }
+
+    async reaction(type, e) {
+        //console.log(e.target.innerHTML);
+        let object = e.target.id;
+        object = object.slice(e.target.id.indexOf("-")+1);
+        let sequence = this.props.sequence;
+        const tx = {
+            version: 1,
+            account: this.props.keypair.pk,
+            sequence: sequence,
             memo: Buffer.alloc(0),
             operation: 'interact',
             params: {
@@ -638,18 +695,18 @@ class LandingPage extends Component {
         sign(tx, await base32.encode(Buffer.from(this.props.keypair.prk)));
         const etx = encode(tx).toString('hex');
 
-        axios.post('https://komodo.forest.network/broadcast_tx_commit?tx=0x' + etx)
+        axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
             .then(function (response) {
                 console.log(response);
-                this.props.Sequence(sequence+1);
-                this.setState({
-                    transictions: this.state.transictions+1,
-                });
             })
             .catch(function (error) {
                 console.log(error);
             });
-
+        sequence = sequence + 1;
+        this.props.Sequence(sequence);
+        this.setState({
+            transictions: this.state.transictions+1,
+        });
     }
 
 
@@ -748,29 +805,8 @@ class LandingPage extends Component {
                                         <a href="#" className="ml-1">Son doan ngu</a>
                                     </div>
                                     <br />
-
                                 </div>
                             </div>
-
-                            {/* <!--trend in the world--> */}
-                            {/*<div className="bg-newfeed pl-3 mt-2 pt-2">
-                                <div class="">
-                                    <h5 className=""> Trends in the whole world</h5>
-                                    <a href="#" className="text-danger font-weight-bold mt-1">#Happy Monday</a>
-                                    <div className="row text-dark "> 42,5 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1">#OurEpiphanyJin</a>
-                                    <div className="row text-dark "> 25,5 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1"># 3aralıkdünyaengellilerg
-                                        the</a>
-                                    <div className="row text-dark "> 141 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1">#MondayMotivation</a>
-                                    <div className="row text-dark "> 118 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1">Alan García</a>
-                                    <div className="row text-dark "> 24,8 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1">Paul McCartney</a>
-                                    <div className="row text-dark "> 42,5 N Tweet</div>
-                                </div>
-                            </div>*/
                             }
                         </div>
                     </div>
@@ -798,9 +834,9 @@ class LandingPage extends Component {
                                         <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                                     </div>
                                     <div className="col-lg-11 col-sm-11">
-                            <textarea placeholder="Write what you want" rows={(this.state.chatBox)?4:1} id="new-post"
-                                      style={{width: "100%", padding: 10, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}
-                                      onClick={this.chatBox}/>
+                                        <textarea placeholder="Write what you want" rows={(this.state.chatBox)?4:1} id="new-post"
+                                                  style={{width: "100%", padding: 10, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}
+                                                  onClick={this.chatBox}/>
                                         <button className="send btn btn-primary" onClick={this.post}>
                                             Send
                                         </button>
