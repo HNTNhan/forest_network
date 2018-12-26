@@ -741,7 +741,8 @@ class LandingPage extends Component {
                             </Link>
                             <br/>
                             <div style={{textAlign: "center"}}>
-                            <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to="/user" style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
+                            <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to={routes.ACCOUNT} style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
+                           
                                 {/* <div style={{fontSize: 24}}><b>{this.props.userName}</b></div> */}
                                 <div className="row">
                                     <div className="col-1">
