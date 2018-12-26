@@ -132,16 +132,50 @@ class Account extends Component {
      
     //get user's avatar.
      //
-     let followerArray = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
-     console.log(followerArray);
-     var distinctFollowerArray = removeDuplicateFollower(followerArray);
-     console.log(distinctFollowerArray);
-     let followerDetail = []
-     for( let i = 0; i < distinctFollowerArray.length; i++){
-         let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
-         followerDetail.push(result);
-     }
-     console.log(followerDetail);
+    //  let followerArray = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+    //  console.log(followerArray);
+    //  var distinctFollowerArray = removeDuplicateFollower(followerArray);
+    //  console.log(distinctFollowerArray);
+    //  let followerDetail = []
+    //  for( let i = 0; i < distinctFollowerArray.length; i++){
+    //      let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+    //      followerDetail.push(result);
+    //  }
+ 
+    // console.log(followerDetail);
+
+    let followerArray =  getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+        var distinctFollowerArray = [];
+    let followerDetail = []
+
+
+    followerArray.then(data => {
+        console.log(data);
+        distinctFollowerArray = removeDuplicateFollower(data);
+    console.log(distinctFollowerArray);
+    for( let i = 0; i < distinctFollowerArray.length; i++){
+        let result =  FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+        result.then(data => {
+            console.log(result);
+        followerDetail.push(data);
+        this.setState({
+            follower: followerDetail
+        })
+    console.log(followerDetail);
+        })
+    }
+
+    })
+
+    // console.log(followerArray);
+    // var distinctFollowerArray = removeDuplicateFollower(followerArray);
+    // console.log(distinctFollowerArray);
+    // for( let i = 0; i < distinctFollowerArray.length; i++){
+    //     let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+    //     followerDetail.push(result);
+    // }
+
+//    console.log(followerDetail);
 
 
      ///
@@ -196,9 +230,9 @@ class Account extends Component {
                             {/* <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/> */}
                         </div>
                         <div className="col-lg-11 col-md-11">
-                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts.user_name} </Link> {posts.time}</span>   
+                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {post.user_name} </Link> {post.time}</span>   
                               
-                              <div><span> {(posts.content) ? posts.content.text : null} </span></div>
+                              <div><span> {(post.content) ? post.content.text : null} </span></div>
                              <hr></hr>
                               <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
                               nCmt
