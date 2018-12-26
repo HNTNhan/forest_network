@@ -785,7 +785,10 @@ class LandingPage extends Component {
                             <div className="row bg-newfeed p-3 mt-1 text-center">
                                 <h5 className="pl-5 ml-4 text-center" >New to Twitter?</h5>
                                 <div className="pl-2 text-center">Sign up now to have your personal timeline!</div> <br />
+                                <Link  onClick={this.logOut} to={routes.SIGN_IN}>
                                 <button className="ml-4 mt-1 border-customize btn btn-danger font-weight-bold justify-content-sm-center" style={{ width: "270px" }} >Registration</button>
+                                </Link>
+                               
                             </div>
 
                             <div className="bg-newfeed pl-3 mt-1">
