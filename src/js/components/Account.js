@@ -384,7 +384,7 @@ class Account extends Component {
               
                 <div className="row" style={{ margin: 0,padding: "", background: "#e6ecf0"}}>
                    {/* left side */}
-                    <div className="col-3" style={{padding: 0}}>
+                    <div className="col-3 " style={{paddingRight:-30}}>
                         <div >
                         <div style={{textAlign: "center"}}>
                         {
@@ -397,6 +397,24 @@ class Account extends Component {
                         {/* <img src={require("../../image/UserIcon.ico")} alt=""/> */}
                             <div className="text-success" style= {{ fontWeight: 'bold',textAlign:"center" }}>{this.props.userName}</div>
                             {/* <div style={{fontWeight: 'bold'}}>Balance: {this.props.energy.balance} TRE</div> */}
+                            {(this.state.edit) ?
+                        <form style={{textAlign: "center"}}>
+                            <div>
+                                <input type="name" className="form-control"
+                                       placeholder="Thiện Nhân" style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <div>
+                                <input type="email" className="form-control" placeholder="@123"
+                                       style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <div>
+                                <input type="birthday" className="form-control" placeholder="Birthday"
+                                       style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <button type="submit" className="btn btn-primary mt-1" style={{marginRight:"-90"}}>Submit</button>
+                        </form>
+                            : null
+                        }
                             <div className="float-left" >
                     
                         <div className="row mb-2 " title="description"><i className="fa fa-address-book-o mr-1 mt-1"></i>TRE {this.props.energy.balance} </div>
@@ -437,7 +455,7 @@ class Account extends Component {
                             {/* <div>Joined November 2015</div> */}
                             <br/>
                         </div>
-                        {(this.state.edit) ?
+                        {/* {(this.state.edit) ?
                         <form style={{textAlign: "center"}}>
                             <div>
                                 <input type="name" className="form-control"
@@ -454,7 +472,7 @@ class Account extends Component {
                             <button type="submit" className="btn btn-primary">Submit</button>
                         </form>
                             : null
-                        }
+                        } */}
                         <div>
 
                         </div>
@@ -464,7 +482,7 @@ class Account extends Component {
                         {(this.state.tag === "posts") ? posts : (this.state.tag === "following") ? following : follower}
                     </div>
                     {/* right side */}
-                    <div className="col-3">
+                    <div className="col-3 pr-0">
                     <div className="float-left">
                             <div className="row bg-newfeed p-3 mt-1">
                                 <h5 className="text-center">New to Twitter?</h5>

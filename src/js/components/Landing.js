@@ -808,7 +808,7 @@ class LandingPage extends Component {
                                     <br />
                                 </div>
                             </div>
-                            }
+                            
                         </div>
                     </div>
                     </div >
@@ -817,12 +817,12 @@ class LandingPage extends Component {
                         <div style={{textAlign: "center", background: 'white', padding: 5, marginBottom: 2}}>
                             <div className="row" >
                                 <div className="col-6">
-                                    <button className="button-info" onClick={() => this.setState({tag: "posts"})}>
+                                    <button className="button-info font-weight-bold text-danger" onClick={() => this.setState({tag: "posts"})}>
                                         <div>Posts</div>
                                     </button>
                                 </div>
                                 <div className="col-6">
-                                    <button className="button-info" onClick={this.onClickOthers} >
+                                    <button className="button-info  font-weight-bold text-danger" onClick={this.onClickOthers} >
                                         <div>Other</div>
                                     </button>
                                 </div>
