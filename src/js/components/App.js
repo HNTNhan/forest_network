@@ -92,7 +92,7 @@ class App extends Component {
                         <Route exact path={routes.SIGN_IN} component={SignInPage} />
                         <Route exact path={routes.HOME} component={HomePage} />
                         <Route exact path={routes.ACCOUNT} component={AccountPage} />
-                        <Route exact path='/user' component={UserProfile}></Route>
+                        {/* <Route exact path='/user' component={UserProfile}></Route> */}
                     </div>
                 </Router>
                 

@@ -244,16 +244,21 @@ export const  removeDuplicate = (array) => {
 export const removeDuplicateFollower = (array) => {
     let set = new Set();
     let unique = []
-    array.map((v, index) => {
-        console.log(v);
-        if(set.has(v)){
-            return false;
-        } else {
-            set.add(v);
-            unique.push(v);
-        }
-    })
-    return unique;
+    if(array.length > 0) {
+        array.map((v, index) => {
+            console.log(v);
+            if(set.has(v)){
+                return false;
+            } else {
+                set.add(v);
+                unique.push(v);
+            }
+        })
+        return unique;
+    } else {
+        return [];
+    }
+  
 }
 
 export async function getFollower(website, motherAddress, currentUserAddress) {

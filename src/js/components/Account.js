@@ -132,16 +132,50 @@ class Account extends Component {
      
     //get user's avatar.
      //
-     let followerArray = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
-     console.log(followerArray);
-     var distinctFollowerArray = removeDuplicateFollower(followerArray);
-     console.log(distinctFollowerArray);
-     let followerDetail = []
-     for( let i = 0; i < distinctFollowerArray.length; i++){
-         let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
-         followerDetail.push(result);
-     }
-     console.log(followerDetail);
+    //  let followerArray = await getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+    //  console.log(followerArray);
+    //  var distinctFollowerArray = removeDuplicateFollower(followerArray);
+    //  console.log(distinctFollowerArray);
+    //  let followerDetail = []
+    //  for( let i = 0; i < distinctFollowerArray.length; i++){
+    //      let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+    //      followerDetail.push(result);
+    //  }
+ 
+    // console.log(followerDetail);
+
+    let followerArray =  getFollower(this.props.website, motherAddress, this.props.keypair.pk);
+        var distinctFollowerArray = [];
+    let followerDetail = []
+
+
+    followerArray.then(data => {
+        console.log(data);
+        distinctFollowerArray = removeDuplicateFollower(data);
+    console.log(distinctFollowerArray);
+    for( let i = 0; i < distinctFollowerArray.length; i++){
+        let result =  FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+        result.then(data => {
+            console.log(result);
+        followerDetail.push(data);
+        this.setState({
+            follower: followerDetail
+        })
+    console.log(followerDetail);
+        })
+    }
+
+    })
+
+    // console.log(followerArray);
+    // var distinctFollowerArray = removeDuplicateFollower(followerArray);
+    // console.log(distinctFollowerArray);
+    // for( let i = 0; i < distinctFollowerArray.length; i++){
+    //     let result = await FindFollowerInfor(this.props.website, distinctFollowerArray[i]);
+    //     followerDetail.push(result);
+    // }
+
+//    console.log(followerDetail);
 
 
      ///
@@ -196,9 +230,9 @@ class Account extends Component {
                             {/* <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/> */}
                         </div>
                         <div className="col-lg-11 col-md-11">
-                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts.user_name} </Link> {posts.time}</span>   
+                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {post.user_name} </Link> {post.time}</span>   
                               
-                              <div><span> {(posts.content) ? posts.content.text : null} </span></div>
+                              <div><span> {(post.content) ? post.content.text : null} </span></div>
                              <hr></hr>
                               <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
                               nCmt
@@ -306,53 +340,122 @@ class Account extends Component {
         console.log(this.props);
         return(
             <div className="container-fluid">
+             <div id="PictureTitel">
+                </div>
+               
                 <div className="row" style={{ margin: 0,padding: "5px 5%", background: "white"}}>
+               
                     <div className="col-3">
                     </div>
                     <div className="col-6 row" style={{textAlign: "center"}}>
-                        <div className="col-4">
-                            <button className="button-info" onClick={() => this.setState({tag: "posts"})}>
-                                <div>Posts</div>
+                        <div className="col-4 ">
+                            <button className="button-info text-center font-weight-bold" onClick={() => this.setState({tag: "posts"})}>
+                                <div className="text-primary">Posts</div>
                                 <div>{this.state.posts.length? this.state.posts.length : 0}</div>
                             </button>
                         </div>
                         <div className="col-4">
-                            <button className="button-info" onClick={() => this.setState({tag: "following"})}>
-                                <div>Following</div>
+                            <button className="button-info text-center font-weight-bold" onClick={() => this.setState({tag: "following"})}>
+                                <div className="text-primary">Following</div>
                                 <div>{distinctFollowing.length}</div>
                             </button>
                         </div>
                         <div className="col-4">
-                            <button className="button-info" onClick={() => this.setState({tag: "follower"})}>
-                                <div>Follower</div>
+                            <button className="button-info text-center font-weight-bold" onClick={() => this.setState({tag: "follower"})}>
+                                <div className="text-primary">Follower</div>
                                 <div>{this.state.follower.length? this.state.follower.length: 0}</div>
                             </button>
                         </div>
                     </div>
-                    <div className="col-3">
+                    <div className="col-2">
                         {(this.state.edit) ? null :
-                            <button className="send btn btn-primary" onClick={()=>this.setState({edit: true})}>
-                                Edit profile
-                            </button>
+                            // <button className="send btn btn-primary" onClick={()=>this.setState({edit: true})}>
+                            //     Edit profile
+                            // </button>
+                            <div className="float-left mt-1">
+                            <button className="border-customize btn btn-outline-danger font-weight-bold" style={{ width: "146px" }} onClick={()=>this.setState({edit: true})} >Edit Profile</button>
+                            </div>
                         }
-
+                          {/* <div className="float-left">
+                            <button className="border-customize btn btn-outline-danger font-weight-bold" style={{ width: "146px" }} onClick={()=>this.setState({edit: true})} >Edit Profile</button>
+                        </div> */}
                     </div>
                 </div>
-                <div className="row" style={{ margin: 0,padding: "5px 5%", background: "#e6ecf0"}}>
-                    <div className="col-3" style={{padding: 0}}>
+              
+                <div className="row" style={{ margin: 0,padding: "", background: "#e6ecf0"}}>
+                   {/* left side */}
+                    <div className="col-3 " style={{paddingRight:-30}}>
+                        <div >
                         <div style={{textAlign: "center"}}>
                         {
+                            
                             this.props.userPicture !== null ? 
                             <img style={{width: 100, height:100}} className="rounded-circle" src={"data:image/jpeg/png;base64,"+ this.props.userPicture} alt="User Picture"/>
                             : (<img src={require("../../image/UserIcon.ico")} alt=""/> ) 
                         }
+                        </div>
                         {/* <img src={require("../../image/UserIcon.ico")} alt=""/> */}
-                            <div style= {{ fontWeight: 'bold' }}>{this.props.userName}</div>
-                            <div style={{fontWeight: 'bold'}}>Balance: {this.props.energy.balance} TRE</div>
+                            <div className="text-success" style= {{ fontWeight: 'bold',textAlign:"center" }}>{this.props.userName}</div>
+                            {/* <div style={{fontWeight: 'bold'}}>Balance: {this.props.energy.balance} TRE</div> */}
+                            {(this.state.edit) ?
+                        <form style={{textAlign: "center"}}>
+                            <div>
+                                <input type="name" className="form-control"
+                                       placeholder="Thiện Nhân" style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <div>
+                                <input type="email" className="form-control" placeholder="@123"
+                                       style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <div>
+                                <input type="birthday" className="form-control" placeholder="Birthday"
+                                       style={{margin: 0, padding: 10, width: "90%"}}/>
+                            </div>
+                            <button type="submit" className="btn btn-primary mt-1" style={{marginRight:"-90"}}>Submit</button>
+                        </form>
+                            : null
+                        }
+                            <div className="float-left" >
+                    
+                        <div className="row mb-2 " title="description"><i className="fa fa-address-book-o mr-1 mt-1"></i>TRE {this.props.energy.balance} </div>
+                        <div className="row mb-2 " title="Location"><i className="fa fa-home mr-1 mt-1" aria-hidden="true"></i>user.location</div>
+                        <div className="row mb-2" title="Times of register"><i className="fa fa-calendar mr-1 mt-1" aria-hidden="true"></i>Involved  6th February, 2018</div>
+                        <div className="row mb-2" title="school"><i className="fa fa-graduation-cap  mt-1" aria-hidden="true"></i>user.school</div>
+                        <a href="#" className="text-align"  > <i className="fa fa-picture-o mr-1 mt-1 ml-0 text-align" aria-hidden="true"></i>Photos and videos</a>
+                        {/* section picture or album */}
+                        <div className="row " style={{height: 80}}>
+      <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: "url(./images/2l.jpg)"}}>
+      </div>
+      <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: " url(./images/3l.jpg)"}}>
+        </div>
+        <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: "url(./images/4l.jpg)"}}>
+          </div>
+    </div>
+    <div className="row mt-1"  style={{height: 80}}>
+        <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: " url(./images/5l.jpg)"}}>
+          </div>
+          <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: "url(./images/6l.jpg)"}}>
+            </div>
+            <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: " url(./images/7l.jpg)"}}>
+              </div>
+    </div>
+    <div className="row mt-1" style={{height: 80}}>
+        <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: " url(./images/5l.jpg)"}}>
+          </div>
+          <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: "url(./images/6l.jpg)"}}>
+            </div>
+            <div className="col-3 mr-1 rounded fillPicture" style={{ backgroundImage: " url(./images/7l.jpg)"}}>
+              </div>
+    </div>
+    <hr></hr>
+    <div className="text-center font-weight-bold slogan" style={{fontSize:30}}>Make your life more beautifull</div>
+                    </div>
+
+                            
                             {/* <div>Joined November 2015</div> */}
                             <br/>
                         </div>
-                        {(this.state.edit) ?
+                        {/* {(this.state.edit) ?
                         <form style={{textAlign: "center"}}>
                             <div>
                                 <input type="name" className="form-control"
@@ -369,14 +472,67 @@ class Account extends Component {
                             <button type="submit" className="btn btn-primary">Submit</button>
                         </form>
                             : null
-                        }
+                        } */}
                         <div>
 
                         </div>
                     </div>
-
+                    {/* content side */}
                     <div className="col-6 row" style={{padding: 0, margin: 0}}>
                         {(this.state.tag === "posts") ? posts : (this.state.tag === "following") ? following : follower}
+                    </div>
+                    {/* right side */}
+                    <div className="col-3 pr-0">
+                    <div className="float-left">
+                            <div className="row bg-newfeed p-3 mt-1">
+                                <h5 className="text-center">New to Twitter?</h5>
+                                <div className="text-center" >Sign up now to have your personal timeline!</div> <br />
+                                <Link  onClick={this.logOut} to={routes.SIGN_IN}>
+                                <button className="ml-4 mt-1 border-customize btn btn-danger font-weight-bold justify-content-sm-center" style={{ width: "270px" }} >Registration</button>
+                                </Link>
+                            </div>
+
+                            <div className="bg-newfeed pl-3 mt-1">
+                                <div className="">
+                                    <h5> You might also like ·</h5>
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/1.PNG)" }}></div>
+                                        <a href="#" className="ml-1">Chali putt</a>
+                                    </div>
+                                    <br />
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/5l.jpg)" }}></div>
+                                        <a href="#" className="ml-1">Tung oc cho</a>
+                                    </div>
+                                    <br />
+                                    <div className="row mb-1">
+                                        <div className=" icon-newfeed rounded-circle" style={{ "backgroundImage": "url(images/1.PNG)" }}></div>
+                                        <a href="#" className="ml-1">Son doan ngu</a>
+                                    </div>
+                                    <br />
+
+                                </div>
+                            </div>
+
+                            {/* <!--trend in the world--> */}
+                            <div className="bg-newfeed pl-3 mt-2 pt-2">
+                                <div class="">
+                                    <h5  className=""> Trends in the whole world</h5>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#Happy Monday</a>
+                                    <div className="row text-dark "> 42,5 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#OurEpiphanyJin</a>
+                                    <div class="row text-dark "> 25,5 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1"># 3aralıkdünyaengellilerg the</a>
+                                    <div class="row text-dark "> 141 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">#MondayMotivation</a>
+                                    <div class="row text-dark "> 118 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">Alan García</a>
+                                    <div class="row text-dark "> 24,8 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1">Paul McCartney</a>
+                                    <div class="row text-dark "> 42,5 N Tweet</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

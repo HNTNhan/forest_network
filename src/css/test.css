@@ -120,3 +120,6 @@ body{
 .align-center{
     left: 50%;
 }
+.text-align{
+    text-align: unset!important;
+}

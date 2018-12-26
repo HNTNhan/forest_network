@@ -1061,8 +1061,13 @@ class LandingPage extends Component {
                             </Link>
                             <br/>
                             <div style={{textAlign: "center"}}>
+<<<<<<< HEAD
+                            <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to="/user" style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
+=======
                             <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to={routes.ACCOUNT} style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
                            
+                                {/* <div style={{fontSize: 24}}><b>{this.props.userName}</b></div> */}
+>>>>>>> 2dab3a77443682590b7bb5962a49c9e827aaf6a6
                                 <div className="row">
                                     <div className="col-1">
                                     </div>
@@ -1138,13 +1143,23 @@ class LandingPage extends Component {
                     <div className="col-lg-8 col-md-8" style={{ padding: 0, border: "1px solid #e6ecf0"}}>
                         <div style={{textAlign: "center", background: 'white', padding: 5, marginBottom: 2}}>
                             <div className="row" >
+<<<<<<< HEAD
                                 <div className="col-3">
                                     <button className="button-info" onClick={()=>this.setState({tag: "posts"})}>
                                         <div>Posts</div>
                                     </button>
                                 </div>
                                 <div className="col-3">
+                                    <button className="button-info" onClick={this.onClickOthers} >
+=======
+                                <div className="col-6">
+                                    <button className="button-info font-weight-bold text-danger" onClick={() => this.setState({tag: "posts"})}>
+                                        <div>Posts</div>
+                                    </button>
+                                </div>
+                                <div className="col-6">
                                     <button className="button-info  font-weight-bold text-danger" onClick={this.onClickOthers} >
+>>>>>>> 2dab3a77443682590b7bb5962a49c9e827aaf6a6
                                         <div>Other</div>
                                     </button>
                                 </div>
