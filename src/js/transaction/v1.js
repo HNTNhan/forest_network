@@ -168,7 +168,7 @@ export function decode(data) {
       params.address = base32.encode(params.address);
       Keypair.fromPublicKey(params.address);
       break;
-    
+
     case 3:
       operation = 'post';
       params = PostParams.decode(tx.params);
@@ -192,12 +192,18 @@ export function decode(data) {
           params.value = params.value.toString("base64");
       }
       break;
-    
+
     case 5:
       operation = 'interact';
       params = InteractParams.decode(tx.params);
       params.object = params.object.toString('hex').toUpperCase();
-      let temp = PlainTextContent.decode(params.content);
+        let temp;
+      try {
+          temp = PlainTextContent.decode(params.content);
+      }
+      catch (e) {
+          temp = ReactContent.decode(params.content);
+      }
       if(temp.type === 1) {
             params.content = PlainTextContent.decode(params.content);
       }
@@ -205,7 +211,7 @@ export function decode(data) {
           params.content = ReactContent.decode(params.content);
       }
       break;
-    
+
     default:
       throw Error('Unspport operation');
   }

@@ -61,17 +61,18 @@ class LandingPage extends Component {
         this.chatBox = this.chatBox.bind(this);
         this.post = this.post.bind(this);
         this.show_post = this.show_post.bind(this);
-        this.reply = this.reply.bind(this);
         this.showOthers = this.showOthers.bind(this);
         this.showPosts = this.showPosts.bind(this);
         this.onClickOthers = this.onClickOthers.bind(this);
-
+        this.reply = this.reply.bind(this);
+        this.reaction = this.reaction.bind(this);
     }
 
     async componentWillMount(){
         if(!this.props.auth) {
             this.props.history.push(routes.SIGN_IN);
         }
+        console.log(123);
         //const a = await base32.encode(Buffer.from(this.props.keypair.prk));
     }
 
@@ -271,46 +272,6 @@ class LandingPage extends Component {
                 all_account_data: all_account_data,
             });
             await this.showPosts();
-            /*
-            show_posts = [];
-            if(posts.length !== 0) {
-                for (let i = 0; i <= posts.length - 1; i++) {
-                    show_posts = show_posts.concat(
-                        <div className="button-post" key={i} id={i}>
-                            <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
-                                <div className="col-lg-1 col-md-1">
-                                    <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
-                                </div>
-                                <div className="col-lg-11 col-md-11">
-                                    <div> {posts[i].user_name}</div>
-                                    <div> {posts[i].time}</div>
-                                    <div><span> {posts[i].content.text} </span></div>
-                                    <button className="reply" title="Reply">
-                                        <img id={"rely-" + posts[i].hash} src={require("../../image/Reply.png")} alt="reply" width="18"
-                                             onClick={this.show_post}/>
-                                        {posts[i].reply.length}
-                                        <span><b> </b></span>
-                                    </button>
-                                    <button className="like" onClick={this.like} title="Like">
-                                        <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
-                                        <span><b> </b></span>
-                                    </button>
-                                    <button className="share" onClick={this.share} title="Share">
-                                        <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
-                                        <span><b> </b></span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                }
-            }
-
-            this.setState({
-                posts: show_posts,
-                all_account_data: all_account_data,
-            });
-            */
         }, 5000);
 
         if(posts.length !== 0) {
@@ -322,35 +283,35 @@ class LandingPage extends Component {
                                 <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                             </div>
                             <div className="col-lg-11 col-md-11">
-                            <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>   
-                              
+                                <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
+
                                 <div><span> {posts[i].content.text} </span></div>
-                               <hr></hr>
-                                <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
-                                nCmt
-                                <a href="#" style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={this.like}></a>
-                                Number
-                                <a href="#" style={{textDecoration:"none"}} className="fa fa-thumbs-o-down ml-5" aria-hidden="true"></a>
-                                Number
-                                <a href="#" style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={this.share}></a>
-                                Number
-                                <a href="#" style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true"></a>
-                                Number
-                                <hr></hr>
-                                {/* <button className="reply" title="Reply">
-                                    <img id={i} src={require("../../image/Reply.png")} alt="reply" width="18"
-                                         onClick={this.show_post}/>
+                                <hr/>
+                                <a href="#" id={"rely-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
                                     {posts[i].reply.length}
-                                    <span><b> </b></span>
-                                </button>
-                                <button className="like" onClick={this.like} title="Like">
-                                    <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
-                                    <span><b> </b></span>
-                                </button>
-                                <button className="share" onClick={this.share} title="Share">
-                                    <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
-                                    <span><b> </b></span>
-                                </button> */}
+                                </a>
+                                <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={()=>this.reaction(1)}>
+                                    {posts[i].reaction.like}
+                                </a>
+
+                                <a href="#" id={"love-" + posts[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(2)}>
+                                    {posts[i].reaction.love}
+                                </a>
+
+                                <a href="#" id={"haha-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={()=>this.reaction(3)}>
+                                    {posts[i].reaction.haha}
+                                </a>
+
+                                <a href="#" id={"wow-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(4)}>
+                                    {posts[i].reaction.wow}
+                                </a>
+                                <a href="#" id={"sad-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-thumbs-o-down ml-5" aria-hidden="true" onClick={()=>this.reaction(5)}>
+                                    {posts[i].reaction.sad}
+                                </a>
+                                <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(6)}>
+                                    {posts[i].reaction.angry}
+                                </a>
+                                <hr/>
                             </div>
                         </div>
                     </div>
@@ -599,7 +560,7 @@ class LandingPage extends Component {
         let show_posts = this.state.posts;
         for(let i = 0; i <= posts.length - 1; i++) {
             show_posts = show_posts.concat(
-                <div className="button-post" key={i} id={i}>
+                <div className="button-post" key={i + this.state.posts.length}>
                     <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
                         <div className="col-lg-1 col-md-1">
                             <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
@@ -608,35 +569,32 @@ class LandingPage extends Component {
                         <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>   
                               
                               <div><span> {posts[i].content.text} </span></div>
-                             <hr></hr>
-                              <a href="#" style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}></a>
-                              nCmt
-                              <a href="#" style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={this.like}></a>
-                              Number
-                              <a href="#" style={{textDecoration:"none"}} className="fa fa-thumbs-o-down ml-5" aria-hidden="true"></a>
-                              Number
-                              <a href="#" style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={this.share}></a>
-                              Number
-                              <a href="#" style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true"></a>
-                              Number
-                              <hr></hr>
-                            {/* <div> {posts[i].user_name}</div>
-                            <div> {posts[i].time}</div>
-                            <div><span> {posts[i].content.text} </span></div>
-                            <button className="reply" title="Reply">
-                                <img id={"rely-" + posts[i].hash} src={require("../../image/Reply.png")} alt="reply" width="18"
-                                     onClick={this.show_post}/>
-                                {posts[i].reply.length}
-                                <span><b> </b></span>
-                            </button>
-                            <button className="like" onClick={this.like} title="Like">
-                                <img id={"like-" + posts[i].hash} src={require("../../image/Heart.ico")} alt="like" width="18"/>
-                                <span><b> </b></span>
-                            </button>
-                            <button className="share" onClick={this.share} title="Share">
-                                <img id={"love-" + posts[i].hash} src={require("../../image/Share.ico")} alt="share" width="18"/>
-                                <span><b> </b></span>
-                            </button> */}
+                            <hr/>
+                              <a href="#" id={"rely-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
+                                  {posts[i].reply.length}
+                              </a>
+                              <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
+                                  {posts[i].reaction.like}
+                              </a>
+
+                              <a href="#" id={"love-" + posts[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(2, e)}}>
+                                  {posts[i].reaction.love}
+                              </a>
+
+                              <a href="#" id={"haha-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={(e)=>{this.reaction(3, e)}}>
+                                  {posts[i].reaction.haha}
+                              </a>
+
+                              <a href="#" id={"wow-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(4, e)}}>
+                                  {posts[i].reaction.wow}
+                              </a>
+                                <a href="#" id={"sad-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-thumbs-o-down ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(5, e)}}>
+                                    {posts[i].reaction.sad}
+                                </a>
+                                <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(6, e)}}>
+                                    {posts[i].reaction.angry}
+                                </a>
+                              <hr/>
                         </div>
                     </div>
                 </div>
@@ -657,28 +615,44 @@ class LandingPage extends Component {
 
     }
 
-    like() {
+    async reaction(type, e) {
+        //console.log(e.target.innerHTML);
+        let object = e.target.id;
+        console.log(e.target.id);
+        object = object.slice(e.target.id.indexOf("-")+1);
+        console.log(object);
+        const tx = {
+            version: 1,
+            account: this.props.keypair.pk,
+            sequence: this.props.sequence,
+            memo: Buffer.alloc(0),
+            operation: 'interact',
+            params: {
+                object: object,
+                content: {
+                    type: 2,
+                    reaction: type,
+                }
+            },
+        };
+        sign(tx, await base32.encode(Buffer.from(this.props.keypair.prk)));
+        const etx = encode(tx).toString('hex');
+
+        axios.post('https://komodo.forest.network/broadcast_tx_commit?tx=0x' + etx)
+            .then(function (response) {
+                console.log(response);
+                this.props.Sequence(sequence+1);
+                this.setState({
+                    transictions: this.state.transictions+1,
+                });
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
 
     }
-    love() {
 
-    }
-    haha() {
 
-    }
-    wow() {
-
-    }
-    sad() {
-
-    }
-    angry() {
-
-    }
-
-    share() {
-
-    }
 
     render() {
         if (window.performance) {
@@ -779,23 +753,25 @@ class LandingPage extends Component {
                             </div>
 
                             {/* <!--trend in the world--> */}
-                            <div className="bg-newfeed pl-3 mt-2 pt-2">
+                            {/*<div className="bg-newfeed pl-3 mt-2 pt-2">
                                 <div class="">
-                                    <h5  className=""> Trends in the whole world</h5>
+                                    <h5 className=""> Trends in the whole world</h5>
                                     <a href="#" className="text-danger font-weight-bold mt-1">#Happy Monday</a>
                                     <div className="row text-dark "> 42,5 N Tweet</div>
                                     <a href="#" className="text-danger font-weight-bold mt-1">#OurEpiphanyJin</a>
-                                    <div class="row text-dark "> 25,5 N Tweet</div>
-                                    <a href="#" className="text-danger font-weight-bold mt-1"># 3aralıkdünyaengellilerg the</a>
-                                    <div class="row text-dark "> 141 N Tweet</div>
+                                    <div className="row text-dark "> 25,5 N Tweet</div>
+                                    <a href="#" className="text-danger font-weight-bold mt-1"># 3aralıkdünyaengellilerg
+                                        the</a>
+                                    <div className="row text-dark "> 141 N Tweet</div>
                                     <a href="#" className="text-danger font-weight-bold mt-1">#MondayMotivation</a>
-                                    <div class="row text-dark "> 118 N Tweet</div>
+                                    <div className="row text-dark "> 118 N Tweet</div>
                                     <a href="#" className="text-danger font-weight-bold mt-1">Alan García</a>
-                                    <div class="row text-dark "> 24,8 N Tweet</div>
+                                    <div className="row text-dark "> 24,8 N Tweet</div>
                                     <a href="#" className="text-danger font-weight-bold mt-1">Paul McCartney</a>
-                                    <div class="row text-dark "> 42,5 N Tweet</div>
+                                    <div className="row text-dark "> 42,5 N Tweet</div>
                                 </div>
-                            </div>
+                            </div>*/
+                            }
                         </div>
                     </div>
                     </div >
