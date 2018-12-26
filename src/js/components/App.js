@@ -39,33 +39,34 @@ class App extends Component {
 
     statusWebsite(){
         let website = [];
+        Promise.all([
         axios.get('https://komodo.forest.network/')
             .then(function (response) {
                 website = website.concat('https://komodo.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
-            });
+            }),
         axios.get('https://zebra.forest.network/')
             .then(function (response){
                 website = website.concat('https://zebra.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
-            });
+            }),
         axios.get('https://dragonfly.forest.network/')
             .then(function (response) {
                 website = website.concat('https://dragonfly.forest.network/');
             })
             .catch(function (error) {
                 website = website.concat('');
-            });
+            }),
         axios.get('https://gorilla.forest.network/')
             .then(function (response) {
                 website = website.concat('https://gorilla.forest.network/');
             }).catch(function (error) {
             website = website.concat('');
-        });
+        })]);
 
         setTimeout(()=>{
             let number = 0;
@@ -76,10 +77,11 @@ class App extends Component {
                 }
             }
             if(number >= 3) this.props.systemActive(true);
-        }, 500);
+        }, 1000);
     }
 
     render() {
+        console.log(123);
         this.statusWebsite();
         return (
             <div>

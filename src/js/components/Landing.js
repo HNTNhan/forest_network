@@ -54,9 +54,12 @@ class LandingPage extends Component {
             others: [],
             show_others: 0,
             chatBox: false,
+            temp_posts: [],
             posts: null,
             show_posts: 0,
             all_account_data: [],
+            pos_reply: -1,
+            reply: null,
         };
         this.chatBox = this.chatBox.bind(this);
         this.post = this.post.bind(this);
@@ -67,6 +70,8 @@ class LandingPage extends Component {
         this.onClickReply = this.onClickReply.bind(this);
         this.newComment = this.newComment.bind(this);
         this.reaction = this.reaction.bind(this);
+        this.payment = this.payment.bind(this);
+        this.updateEnergy = this.updateEnergy.bind(this);
     }
 
     async componentWillMount(){
@@ -269,58 +274,47 @@ class LandingPage extends Component {
         }
         if(limit <= 16) limit = data.length;
         let show_posts = [];
-        setTimeout(async ()=>{
-            this.props.Follower(all_follower);
-            console.log(all_account_data);
-            await this.setState({
-                posts: [],
-                show_posts: 0,
-                all_account_data: all_account_data,
-            });
-            await this.showPosts();
-        }, 5000);
 
-        {/*if(posts.length !== 0) {
+        if(posts.length !== 0) {
             for (let i = 0; i <= posts.length - 1; i++) {
                 show_posts = show_posts.concat(
-                    <div className="button-post" key={i} id={i}>
-                        <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                    <div className="button-post" key={i}>
+                        <div className="row" id={posts[i].hash} style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
                             <div className="col-lg-1 col-md-1">
                                 <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                             </div>
                             <div className="col-lg-11 col-md-11">
                                 <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
-
                                 <div><span> {posts[i].content.text} </span></div>
-                                <a href="#" id={"rely-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
+                                <a href="#" id={"reply-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.onClickReply}>
                                     {posts[i].reply.length}
                                 </a>
-                                <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={()=>this.reaction(1)}>
+                                <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
                                     {posts[i].reaction.like}
                                 </a>
 
-                                <a href="#" id={"love-" + posts[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(2)}>
+                                <a href="#" id={"love-" + posts[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(2, e)}}>
                                     {posts[i].reaction.love}
                                 </a>
 
-                                <a href="#" id={"haha-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={()=>this.reaction(3)}>
+                                <a href="#" id={"haha-" + posts[i].hash} style={{textDecoration: "none"}} className="fa  fa-smile-o ml-5 " aria-hidden="true" onClick={(e)=>{this.reaction(3, e)}}>
                                     {posts[i].reaction.haha}
                                 </a>
 
-                                <a href="#" id={"wow-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(4)}>
+                                <a href="#" id={"wow-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(4, e)}}>
                                     {posts[i].reaction.wow}
                                 </a>
-                                <a href="#" id={"sad-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-thumbs-o-down ml-5" aria-hidden="true" onClick={()=>this.reaction(5)}>
+                                <a href="#" id={"sad-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-frown-o ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(5, e)}}>
                                     {posts[i].reaction.sad}
                                 </a>
-                                <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={()=>this.reaction(6)}>
+                                <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa  fa-meh-o ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(6, e)}}>
                                     {posts[i].reaction.angry}
                                 </a>
                             </div>
                             <div className="col-auto"> </div>
                             <div className="col-lg-11 col-sm-11">
-                                 <textarea placeholder="Comment what you want" rows="1" id="new-comment"
-                                           style={{width: "100%", padding: 2, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}/>
+                             <textarea placeholder="Comment what you want" rows="1" id="new-comment"
+                                       style={{width: "100%", padding: 2, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}/>
                                 <button id={"comment-" + posts[i].hash} className="send btn btn-primary" onClick={this.newComment}>
                                     Send
                                 </button>
@@ -329,7 +323,18 @@ class LandingPage extends Component {
                     </div>
                 )
             }
-        }*/}
+        }
+
+        setTimeout(async ()=>{
+            this.props.Follower(all_follower);
+            console.log(all_account_data);
+            await this.setState({
+                all_account_data: all_account_data,
+            });
+            this.showPosts(0);
+        }, 10000);
+
+
 
         this.setState({
             followings_name: followings_name,
@@ -340,6 +345,76 @@ class LandingPage extends Component {
             balance: parseFloat(balance/100000000).toFixed(8),
         });
     }
+
+    async updateEnergy() {
+        let data = await getData(this.props.website, this.props.keypair.pk);
+
+        let balance = this.props.energy.balance;
+        let bandwidthTime = this.props.energy.bandwidthTime;
+        let bandwidth = this.props.energy.bandwidth;
+
+        const transictions = data.length;
+
+        for(let i=0; i<data.length; i++) {
+            let tx = Buffer(data[i].tx, "base64");
+            let txSize = tx.length;
+            try {
+                tx = decode(tx);
+            }
+            catch(error) {
+                continue;
+            }
+            if (i>= this.props.energy.pos) {
+                if(tx.operation === "payment") {
+                    if(tx.account === this.props.keypair.pk) {
+                        balance -= parseInt(tx.params.amount);
+                        let time = await getTime(this.props.website, data[i].height);
+                        const energy = await getEnergy(balance, bandwidthTime, bandwidth, txSize, time);
+                        bandwidthTime = time;
+                        bandwidth = energy.bandwidth;
+                    }
+                    else {
+                        balance += parseInt(tx.params.amount);
+                        let time = await getTime(this.props.website, data[i].height);
+                        const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
+                        bandwidthTime = time;
+                        bandwidth = energy.bandwidth;
+                    }
+                }
+                else {
+                    let time = await getTime(this.props.website, data[i].height);
+                    const energy = await getEnergy(balance, bandwidthTime, bandwidth, txSize, time);
+                    bandwidthTime = time;
+                    bandwidth = energy.bandwidth;
+                }
+            }
+        }
+        this.props.Energy({
+            pos: data.length,
+            balance: balance,
+            bandwidthTime: bandwidthTime,
+            bandwidth: bandwidth,
+        });
+
+        let time = await getLatestBlockTime(this.props.website);
+        const energy = await getEnergy(balance, bandwidthTime, bandwidth, 0, time);
+
+        this.setState({
+            energy: energy.energy,
+            transictions: transictions,
+            balance: parseFloat(balance/100000000).toFixed(8),
+        });
+    }
+
+    async shouldComponentUpdate(nextProps, nextState) {
+        let d=new Date();
+        let m=d.getMinutes();
+        let s=d.getMinutes();
+        if(m % 2 === 0 && s === 1) {
+            this.updateEnergy();
+        }
+    }
+
 
     chatBox() {
         this.setState({
@@ -481,8 +556,18 @@ class LandingPage extends Component {
         });
     }
 
-    async showPosts(){
-        let pos = this.state.show_posts;
+    async showPosts(type){
+        let pos;
+        let show_posts;
+        if(type === 0) {
+            pos = 0;
+            show_posts = [];
+        }
+        else {
+            pos = this.state.show_posts;
+            show_posts = this.state.posts;
+        }
+
         let limit = 0;
         let posts = [];
         const data = this.props.data;
@@ -522,6 +607,8 @@ class LandingPage extends Component {
             }
         }
         const temp_data = this.state.all_account_data;
+        let reaction = false;
+        let account = "";
         for(let j = temp_data.length-1; j>=0; j--) {
             let tx = Buffer(temp_data[j].tx, "base64");
             try {
@@ -530,7 +617,7 @@ class LandingPage extends Component {
             catch(error) {
                 continue;
             }
-            let reaction = false;
+            if(tx.account !== account) reaction = false;
             for(let l =0; l<posts.length; l++) {
                 if(tx.operation === "interact" && tx.params.object === posts[l].hash)
                 {
@@ -540,9 +627,19 @@ class LandingPage extends Component {
                             block_height: temp_data[j].height,
                             content: tx.params.content.text,
                             account: tx.account,
+                            time: null,
+                            reaction: {
+                                like: 0,
+                                love: 0,
+                                haha: 0,
+                                wow: 0,
+                                sad: 0,
+                                angry: 0,
+                            },
                         })
                     }
                     else if(tx.params.content.type === 2 && reaction === false) {
+                        reaction = true;
                         switch (tx.params.content.reaction) {
                             case 1:
                                 posts[l].reaction.like++;
@@ -567,20 +664,22 @@ class LandingPage extends Component {
                     }
                 }
             }
+            account = tx.account;
         }
 
-        let show_posts = this.state.posts;
         for(let i = 0; i <= posts.length - 1; i++) {
             show_posts = show_posts.concat(
-                <div className="button-post" key={i + this.state.posts.length}>
-                    <div className="row" style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                <div className="button-post" key={i + ((type === 0) ? 0: this.state.posts.length)}>
+                    <div className="row" id={posts[i].hash} style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
                         <div className="col-lg-1 col-md-1">
                             <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
                         </div>
                         <div className="col-lg-11 col-md-11">
-                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
+                            <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
+                        </div>
+                        <div className="col-lg-12 col-md-12">
                               <div><span> {posts[i].content.text} </span></div>
-                              <a href="#" id={"reply-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.show_post}>
+                              <a href="#" id={"reply-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.onClickReply}>
                                   {posts[i].reply.length}
                               </a>
                               <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
@@ -618,7 +717,9 @@ class LandingPage extends Component {
             )
         }
 
-        this.setState({
+        console.log(123);
+        await this.setState({
+            temp_posts: this.state.temp_posts.concat(posts),
             show_posts: pos,
             posts: show_posts,
         });
@@ -628,17 +729,165 @@ class LandingPage extends Component {
         console.log(e.target.id);
     }
 
-    onClickReply() {
+    async onClickReply(e) {
+        let object = e.target.id;
+        object = object.slice(e.target.id.indexOf("-")+1);
+        const posts = this.state.temp_posts;
+        const temp_data = this.state.all_account_data;
+        let pos_reply = -1;
+        let reply = null;
+        for(let i=0; i<posts.length; i++) {
+            if(posts[i].hash === object) {
+                pos_reply = i;
+                let reaction = false;
+                let account = "";
+                reply = posts[i].reply;
+                for(let j = temp_data.length-1; j>=0; j--) {
+                    let tx = Buffer(temp_data[j].tx, "base64");
+                    try {
+                        tx = decode(tx);
+                    }
+                    catch(error) {
+                        continue;
+                    }
+                    if(tx.account !== account) reaction = false;
+                    for(let l =0; l<reply.length; l++) {
+                        if(tx.operation === "interact" && tx.params.object === reply[l].hash)
+                        {
+                            reply[l].time = await new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(await getTime(this.props.website, reply[l].block_height));
+                            console.log(reply[l].time);
+                            if(tx.params.content.type === 2 && reaction === false) {
+                                reaction = true;
+                                switch (tx.params.content.reaction) {
+                                    case 1:
+                                        reply[l].reaction.like++;
+                                        break;
+                                    case 2:
+                                        reply[l].reaction.love++;
+                                        break;
+                                    case 3:
+                                        reply[l].reaction.haha++;
+                                        break;
+                                    case 4:
+                                        reply[l].reaction.wow++;
+                                        break;
+                                    case 5:
+                                        reply[l].reaction.sad++;
+                                        break;
+                                    case 6:
+                                        reply[l].reaction.angry++;
+                                        break;
+                                    default:
+                                }
+                            }
+                        }
+                    }
+                    account = tx.account;
+                }
+                break;
+            }
+        }
 
+        if (reply === null) return;
+        if (reply.length === 0) return;
+        let replies = [];
+        let temp = this.state.posts;
+        console.log(reply);
+        for(let i=0; i<reply.length; i++) {
+            replies = replies.concat(
+                <div key={i+reply[i].hash} className="col-lg-12 col-md-12">
+                    <div className="col-lg-1"> </div>
+                    <div className="col-lg-10">
+                        <div className="col-lg-11 col-md-11">
+                            <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                            <span style={{fontWeight: "bold"}}>  <Link to="#"> {reply[i].account.slice(0, 10) + "..."} </Link> {reply[i].time}</span>
+                        </div>
+
+                        <div className="col-lg-12 col-md-12">
+                            <div><span> {reply[i].content} </span></div>
+                            <a href="#" id={"like-" + reply[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
+                                {reply[i].reaction.like}
+                            </a>
+                            <a href="#" id={"love-" + reply[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(2, e)}}>
+                                {reply[i].reaction.love}
+                            </a>
+
+                            <a href="#" id={"haha-" + reply[i].hash} style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={(e)=>{this.reaction(3, e)}}>
+                                {reply[i].reaction.haha}
+                            </a>
+
+                            <a href="#" id={"wow-" + reply[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(4, e)}}>
+                                {reply[i].reaction.wow}
+                            </a>
+                            <a href="#" id={"sad-" + reply[i].hash} style={{textDecoration: "none"}}  className="fa fa-thumbs-o-down ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(5, e)}}>
+                                {reply[i].reaction.sad}
+                            </a>
+                            <a href="#" id={"angry-" + reply[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(6, e)}}>
+                                {reply[i].reaction.angry}
+                            </a>
+                        </div>
+                    </div>
+                </div>);
+        }
+
+        const i = pos_reply;
+        temp[i] =
+            <div className="button-post" key={i}>
+                <div className="row" id={posts[i].hash} style={{padding: 10, margin: "1px 0", background: "#f5f8fa"}}>
+                    <div className="col-lg-1 col-md-1">
+                        <img src={require("../../image/UserIcon.ico")} alt="user" width="36 "/>
+                    </div>
+                    <div className="col-lg-11 col-md-11">
+                        <span style={{fontWeight: "bold"}}>  <Link to="#"> {posts[i].user_name} </Link> {posts[i].time}</span>
+                        <div><span> {posts[i].content.text} </span></div>
+                        <a href="#" id={"reply-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-commenting-o ml-5" aria-hidden="true" onClick={this.onClickReply}>
+                            {posts[i].reply.length}
+                        </a>
+                        <a href="#" id={"like-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-thumbs-o-up ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(1, e)}}>
+                            {posts[i].reaction.like}
+                        </a>
+
+                        <a href="#" id={"love-" + posts[i].hash} style={{textDecoration:"none"}} className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(2, e)}}>
+                            {posts[i].reaction.love}
+                        </a>
+
+                        <a href="#" id={"haha-" + posts[i].hash} style={{textDecoration: "none"}} className="fa fa-share-alt-square ml-5 " aria-hidden="true" onClick={(e)=>{this.reaction(3, e)}}>
+                            {posts[i].reaction.haha}
+                        </a>
+
+                        <a href="#" id={"wow-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(4, e)}}>
+                            {posts[i].reaction.wow}
+                        </a>
+                        <a href="#" id={"sad-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-thumbs-o-down ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(5, e)}}>
+                            {posts[i].reaction.sad}
+                        </a>
+                        <a href="#" id={"angry-" + posts[i].hash} style={{textDecoration: "none"}}  className="fa fa-heartbeat ml-5" aria-hidden="true" onClick={(e)=>{this.reaction(6, e)}}>
+                            {posts[i].reaction.angry}
+                        </a>
+                    </div>
+                    <div className="col-auto"> </div>
+                    <div className="col-lg-10 col-sm-10">
+                             <textarea placeholder="Comment what you want" rows="1" id="new-comment"
+                                       style={{width: "100%", padding: 2, borderRadius: 10, border: "2px solid lightblue", outline: "none" }}/>
+                        <button id={"comment-" + posts[i].hash} className="send btn btn-primary" onClick={this.newComment}>
+                            Send
+                        </button>
+                    </div>
+                    {replies}
+                </div>
+            </div>
+        ;
+        await this.setState({
+            posts: temp,
+        });
     }
 
     async newComment(e) {
         if(document.getElementById("new-comment").value === "") { alert("Please write something"); return; }
         let sequence = this.props.sequence;
         let object = e.target.id;
-        console.log(object);
         object = object.slice(e.target.id.indexOf("-")+1);
-        console.log(object);
+
         const tx = {
             version: 1,
             account: this.props.keypair.pk,
@@ -694,22 +943,93 @@ class LandingPage extends Component {
         };
         sign(tx, await base32.encode(Buffer.from(this.props.keypair.prk)));
         const etx = encode(tx).toString('hex');
+        let check = false;
 
-        axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
+        await axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
             .then(function (response) {
                 console.log(response);
+                check = true;
             })
             .catch(function (error) {
                 console.log(error);
             });
-        sequence = sequence + 1;
-        this.props.Sequence(sequence);
-        this.setState({
-            transictions: this.state.transictions+1,
-        });
+
+        if(check === true) {
+            console.log(check);
+            sequence = sequence + 1;
+            this.props.Sequence(sequence);
+            this.setState({
+                transictions: this.state.transictions + 1,
+            });
+            this.updateEnergy();
+        }
     }
 
+    async payment(){
+        const pk = document.getElementById("pk").value;
+        if(pk === this.props.keypair.pk) {
+            alert("invalid public key");
+            return;
+        }
+        let data = await getData(this.props.website, pk);
+        if(data === "Not exist" || data.length === 0)
+        {
+            alert("invalid public key");
+            return;
+        }
+        let amount = document.getElementById("amount").value;
+        amount = parseInt(amount);
+        if(Number.isInteger(amount) === false || amount <= 0) {
+            alert("invalid public amount");
+            return;
+        }
+        let balance = this.state.balance *100000000;
+        if(this.state.balance *100000000 - amount < 500) {
+            alert("amount to large");
+            return;
+        }
 
+        let sequence = this.props.sequence;
+        const tx = {
+            version: 1,
+            account: this.props.keypair.pk,
+            sequence: sequence,
+            memo: Buffer.alloc(0),
+            operation: 'payment',
+            params: {
+                address: pk,
+                amount: amount,
+            },
+        };
+        sign(tx, base32.encode(Buffer.from(this.props.keypair.prk)));
+        console.log(tx);
+        const etx = encode(tx).toString('hex');
+        console.log(etx);
+        let check = false;
+        await axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
+            .then(function (response) {
+                console.log(response);
+                alert("Transfer successful!");
+                check = true;
+            })
+            .catch(function (error) {
+                console.log(error);
+                alert("Transfer fail! Please try again.");
+            });
+
+        if(check === true) {
+            document.getElementById("pk").value = "";
+            document.getElementById("amount").value = "";
+            balance = balance - amount;
+            this.props.Sequence(sequence+1);
+            this.setState({
+                balance: parseFloat(balance/100000000).toFixed(8),
+                transictions: this.state.transictions+1,
+            });
+            this.updateEnergy();
+        }
+
+    }
 
     render() {
         if (window.performance) {
@@ -742,7 +1062,6 @@ class LandingPage extends Component {
                             <br/>
                             <div style={{textAlign: "center"}}>
                             <p   style={{textAlign: 'center' , fontWeight: 'bold'}}><Link className="text-success" to="/user" style={{textDecoration: 'none',fontSize: 24}}>{this.props.userName}</Link> </p>
-                                {/* <div style={{fontSize: 24}}><b>{this.props.userName}</b></div> */}
                                 <div className="row">
                                     <div className="col-1">
                                     </div>
@@ -815,14 +1134,19 @@ class LandingPage extends Component {
                     <div className="col-lg-8 col-md-8" style={{ padding: 0, border: "1px solid #e6ecf0"}}>
                         <div style={{textAlign: "center", background: 'white', padding: 5, marginBottom: 2}}>
                             <div className="row" >
-                                <div className="col-6">
-                                    <button className="button-info" onClick={() => this.setState({tag: "posts"})}>
+                                <div className="col-3">
+                                    <button className="button-info" onClick={()=>this.setState({tag: "posts"})}>
                                         <div>Posts</div>
                                     </button>
                                 </div>
-                                <div className="col-6">
+                                <div className="col-3">
                                     <button className="button-info" onClick={this.onClickOthers} >
                                         <div>Other</div>
+                                    </button>
+                                </div>
+                                <div className="col-3">
+                                    <button className="button-info" onClick={()=>this.setState({tag: "payment"})}>
+                                        <div>Payment</div>
                                     </button>
                                 </div>
                             </div>
@@ -845,7 +1169,7 @@ class LandingPage extends Component {
                                 {this.state.posts}
                                 {(this.props.data !== null)?(this.state.show_posts < this.props.data.length)?
                                     <div style={{marginTop: 2}}>
-                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={this.showPosts}>Load More</button>
+                                        <button style={{width: "100%"}} type="button" className="btn btn-outline-primary" onClick={()=>this.showPosts(1)}>Load More</button>
                                     </div> :
                                     <div style={{textAlign: "center", marginTop: 2}}>
                                         Nothing to load
@@ -853,7 +1177,7 @@ class LandingPage extends Component {
                                     : null
                                 }
                             </div>
-                            :
+                            : (this.state.tag === "others") ?
                             <div>
                                 { this.state.others }
                                 {(this.state.show_others < this.props.data.length)?
@@ -865,6 +1189,29 @@ class LandingPage extends Component {
                                     </div>
                                 }
                             </div>
+                                : (this.state.tag === "payment") ?
+                                    <div className="row" style={{ marginTop: 5,background: "white", paddingTop: 5}}>
+                                        <div className="col">
+                                            <div className="title_sign_in">
+                                                <div>Payment</div>
+                                            </div>
+                                            <div>
+                                                <div className="form-group">
+                                                    <br/>
+                                                    <label>Public Key:</label>
+                                                    <input type="text" name="prk" className="form-control"
+                                                           id="pk" placeholder="Please enter public key"/>
+                                                    <label>Amount:</label>
+                                                    <input type="number" name="prk" className="form-control"
+                                                           id="amount" placeholder="Please enter amount money"/>
+                                                    <div style={{textAlign: "center"}}>
+                                                        <button type="submit" className="btn btn-success" style={{marginTop:5 ,background:""}} onClick={this.payment}>Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                : null
                         }
                     </div>
                 </div>

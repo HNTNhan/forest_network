@@ -57,7 +57,7 @@ class SignInPage extends Component{
             const pk = Keypair.fromSecret(prk);
             let data = await getData(this.props.website, pk.publicKey());
 
-            if(data === "Not exist")
+            if(data === "Not exist" || data.length === 0)
             {
                 this.setState({
                     check: false,
