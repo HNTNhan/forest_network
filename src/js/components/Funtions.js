@@ -64,7 +64,7 @@ export async function convertName(pk, list_pk,  list_name, user_name) {
 }
 
 export async function getTime(web, height) {
-    let time = "No Name";
+    let time = null;
     await axios.get(web + "/commit?height=" + height)
         .then(res => {
             time = res.data.result.signed_header.header.time;
