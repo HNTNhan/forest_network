@@ -40,5 +40,16 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script type="text/javascript">
+      function Validate()
+      {
+      var str = document.getElementById('tbSearch').value;
+      if(/^[a-zA-Z0-9]*$/.test(str) == false){
+        alert("Dont type special characters");
+          document.getElementById('tbSearch').value = "";
+    }
+     
+      }
+  </script>
   </body>
 </html>
