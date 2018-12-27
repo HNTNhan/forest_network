@@ -31,7 +31,14 @@ class Navigation extends  Component  {
         this.props.LogOut();
         await store.persistor.flush();
     }
-
+    Validate(){
+        var str = document.getElementById('tbSearch').value;
+      if(/^[a-zA-Z0-9]*$/.test(str) == false){
+        alert("Dont type special characters");
+          document.getElementById('tbSearch').value = "";
+    }
+     
+    }
     render() {
         return (
             <div className="container-fluid">
@@ -62,9 +69,9 @@ class Navigation extends  Component  {
                             <div className="row">
                                 <div className="col-lg-9 col-md-12 col-sm-12">
                                     <form className="form-inline d-flex justify-content-center">
-                                        <input className="form-control mr-sm-2 my-1 border-customize" type="search" placeholder="Search"
-                                               aria-label="Search"/>
-                                        <button className="btn btn-outline-success " type="submit">Search</button>
+                                        <input id="tbSearch" className="form-control mr-sm-2 my-1 border-customize" type="search" placeholder="Search"
+                                               aria-label="Search" />
+                                        <button className="btn btn-outline-success " type="submit" onClick={this.Validate} >Search</button>
                                     </form>
                                 </div>
                                 <div className="col-lg-3 col-md-12 col-sm-12 dropdown" style={{padding: 0}}>
