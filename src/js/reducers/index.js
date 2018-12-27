@@ -1,6 +1,6 @@
 import {
     AUTH, WEBSITE, SYSTEMACTIVE, KEY, SEQUENCE, DATA, USERNAME, FOLLOWINGS, USERPOST, LOGOUT, ENERGY,
-    USERPICTURE, FOLLOWER,
+    USERPICTURE, FOLLOWER, CREATEACCOUND, LASTTRANSICTION
 } from "../constants/action-types";
 
 const initialState = {
@@ -16,6 +16,8 @@ const initialState = {
     follower: null,
     userPost: 0,
     energy: null,
+    lastTransiction: 0,
+    createAccount: [],
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -44,8 +46,12 @@ const rootReducer = (state = initialState, action) => {
             return {...state, userPost: action.payload};
         case ENERGY:
             return {...state, energy: action.payload};
+        case LASTTRANSICTION:
+            return {...state, lastTransiction: action.payload};
+        case CREATEACCOUND:
+            return {...state, createAccount: action.payload};
         case LOGOUT:
-            return initialState;
+            return {...initialState, lastTransiction: state.lastTransiction, createAccount: state.createAccount};
         default:
             return state;
     }

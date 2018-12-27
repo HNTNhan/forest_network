@@ -3,12 +3,13 @@ import {compose} from "redux";
 import {Link} from "react-router-dom";
 import * as routes from "../constants/routes";
 import connect from "react-redux/es/connect/connect";
-import {data, sequence, userName, followings, follower,userPost, energy, userPicture} from "../actions";
+import {data, sequence, userName, followings, follower,userPost, energy, userPicture, lastTransiction, createAccount} from "../actions";
 import axios from "axios";
 import {decode, encode, sign, hash} from "../transaction/index";
 import {getData, getName, convertName, getTime, getEnergy, getLatestBlockTime} from "./Funtions";
 import store from "../store";
 import base32 from "base32.js"
+import {StrKey} from "stellar-base";
 
 const mapDispatchToProps = dispatch => {
     return {
@@ -20,6 +21,8 @@ const mapDispatchToProps = dispatch => {
         Follower: array => dispatch(follower(array)),
         UserPost: array => dispatch(userPost(array)),
         Energy: object => dispatch(energy(object)),
+        LastTransiction: int => dispatch(lastTransiction(int)),
+        CreateAccount: array => dispatch(createAccount(array)),
     };
 };
 
@@ -72,11 +75,15 @@ class LandingPage extends Component {
         this.reaction = this.reaction.bind(this);
         this.payment = this.payment.bind(this);
         this.updateEnergy = this.updateEnergy.bind(this);
+        this.updateReaction = this.updateReaction.bind(this);
+        this.createAccount = this.createAccount.bind(this);
+
     }
 
     async componentWillMount(){
         if(!this.props.auth) {
             this.props.history.push(routes.SIGN_IN);
+            return;
         }
         //const a = await base32.encode(Buffer.from(this.props.keypair.prk));
     }
@@ -354,7 +361,6 @@ class LandingPage extends Component {
         let bandwidth = this.props.energy.bandwidth;
 
         const transictions = data.length;
-
         for(let i=0; i<data.length; i++) {
             let tx = Buffer(data[i].tx, "base64");
             let txSize = tx.length;
@@ -363,6 +369,9 @@ class LandingPage extends Component {
             }
             catch(error) {
                 continue;
+            }
+            if(tx.account === this.props.keypair.pk) {
+                this.props.Sequence(tx.sequence+1);
             }
             if (i>= this.props.energy.pos) {
                 if(tx.operation === "payment") {
@@ -414,7 +423,6 @@ class LandingPage extends Component {
             this.updateEnergy();
         }
     }
-
 
     chatBox() {
         this.setState({
@@ -923,7 +931,6 @@ class LandingPage extends Component {
     }
 
     async reaction(type, e) {
-        //console.log(e.target.innerHTML);
         let object = e.target.id;
         object = object.slice(e.target.id.indexOf("-")+1);
         let sequence = this.props.sequence;
@@ -955,9 +962,9 @@ class LandingPage extends Component {
             });
 
         if(check === true) {
-            console.log(check);
             sequence = sequence + 1;
             this.props.Sequence(sequence);
+            this.updateReaction(object);
             this.setState({
                 transictions: this.state.transictions + 1,
             });
@@ -1029,6 +1036,118 @@ class LandingPage extends Component {
             this.updateEnergy();
         }
 
+    }
+
+    async updateReaction(hash) {
+        let data = this.props.data;
+        let temp = await getData(this.props.website, this.props.keypair.pk);
+        data = data.concat(temp[temp.length-1]);
+        let reaction = {
+            like: 0,
+            love: 0,
+            haha: 0,
+            wow: 0,
+            sad: 0,
+            angry: 0,
+        };
+        let account = null;
+        console.log(data);
+        let isreaction = false;
+        for(let j = data.length-1; j>=0; j--) {
+            console.log(j);
+            let tx = Buffer(data[j].tx, "base64");
+            try {
+                tx = decode(tx);
+            }
+            catch(error) {
+                continue;
+            }
+            if(tx.account !== account) isreaction = false;
+            if(tx.operation === "interact" && tx.params.object === hash)
+            {
+                if(tx.params.content.type === 2 && isreaction === false) {
+                    isreaction = true;
+                    switch (tx.params.content.reaction) {
+                        case 1:
+                            reaction.like++;
+                            break;
+                        case 2:
+                            reaction.love++;
+                            break;
+                        case 3:
+                            reaction.haha++;
+                            break;
+                        case 4:
+                            reaction.wow++;
+                            break;
+                        case 5:
+                            reaction.sad++;
+                            break;
+                        case 6:
+                            reaction.angry++;
+                            break;
+                        default:
+                    }
+                }
+            }
+            account = tx.account;
+        }
+        console.log(reaction);
+        document.getElementById("like-"+hash).innerHTML = reaction.like;
+        document.getElementById("love-"+hash).innerHTML = reaction.love;
+        document.getElementById("haha-"+hash).innerHTML = reaction.haha;
+        document.getElementById("wow-"+hash).innerHTML = reaction.wow;
+        document.getElementById("sad-"+hash).innerHTML = reaction.sad;
+        document.getElementById("angry-"+hash).innerHTML = reaction.angry;
+    }
+
+    async createAccount(){
+        const pk = document.getElementById("pk").value;
+        if (StrKey.isValidEd25519PublicKey(pk)) {
+            const check = await getData(this.props.website, pk);
+            if(check.length > 0) alert("Public key existed!");
+            else {
+                let sequence = this.props.sequence;
+                const tx = {
+                    version: 1,
+                    account: this.props.keypair.pk,
+                    sequence: sequence,
+                    memo: Buffer.alloc(0),
+                    operation: 'create_account',
+                    params: {
+                        address: pk,
+                    },
+                };
+                sign(tx, base32.encode(Buffer.from(this.props.keypair.prk)));
+
+                const etx = encode(tx).toString('hex');
+                console.log(Buffer.from(etx, "base64").length);
+                let check = false;
+
+                await axios.post(this.props.website + '/broadcast_tx_commit?tx=0x' + etx)
+                    .then(function (response) {
+                        console.log(response);
+                        alert("Create successful!");
+                        check = true;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                        alert("Create fail! Please try again.");
+                    });
+
+                if(check === true) {
+                    document.getElementById("pk").value = "";
+                    this.props.Sequence(sequence+1);
+                    this.setState({
+                        transictions: this.state.transictions+1,
+                    });
+                    this.updateEnergy();
+                }
+            }
+        }
+        else {
+            alert("Invalid Public key!");
+        }
     }
 
     render() {
@@ -1107,7 +1226,7 @@ class LandingPage extends Component {
                                 <Link  onClick={this.logOut} to={routes.SIGN_IN}>
                                 <button className="ml-4 mt-1 border-customize btn btn-danger font-weight-bold justify-content-sm-center" style={{ width: "270px" }} >Registration</button>
                                 </Link>
-                               
+
                             </div>
 
                             <div className="bg-newfeed pl-3 mt-1">
@@ -1130,7 +1249,7 @@ class LandingPage extends Component {
                                     <br />
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     </div >
@@ -1144,13 +1263,18 @@ class LandingPage extends Component {
                                     </button>
                                 </div>
                                 <div className="col-3">
-                                    <button className="button-info  font-weight-bold text-danger" onClick={this.onClickOthers} >
+                                    <button className="button-info" onClick={this.onClickOthers} >
                                         <div>Other</div>
                                     </button>
                                 </div>
                                 <div className="col-3">
                                     <button className="button-info" onClick={()=>this.setState({tag: "payment"})}>
                                         <div>Payment</div>
+                                    </button>
+                                </div>
+                                <div className="col-3">
+                                    <button className="button-info" onClick={()=>this.setState({tag: "create"})}>
+                                        <div>Create Account</div>
                                     </button>
                                 </div>
                             </div>
@@ -1209,7 +1333,26 @@ class LandingPage extends Component {
                                                     <input type="number" name="prk" className="form-control"
                                                            id="amount" placeholder="Please enter amount money"/>
                                                     <div style={{textAlign: "center"}}>
-                                                        <button type="submit" className="btn btn-success" style={{marginTop:5 ,background:""}} onClick={this.payment}>Submit</button>
+                                                        <button type="submit" className="btn btn-success" style={{marginTop:5 ,background:""}} onClick={this.payment}>Payment</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                : (this.state.tag === "create") ?
+                                    <div className="row" style={{ marginTop: 5,background: "white", paddingTop: 5}}>
+                                        <div className="col">
+                                            <div className="title_sign_in">
+                                                <div>Create account</div>
+                                            </div>
+                                            <div>
+                                                <div className="form-group">
+                                                    <br/>
+                                                    <label>Public Key:</label>
+                                                    <input type="text" name="prk" className="form-control"
+                                                           id="pk" placeholder="Please enter public key"/>
+                                                    <div style={{textAlign: "center"}}>
+                                                        <button type="submit" className="btn btn-success" style={{marginTop:5 ,background:""}} onClick={this.createAccount}>Create</button>
                                                     </div>
                                                 </div>
                                             </div>

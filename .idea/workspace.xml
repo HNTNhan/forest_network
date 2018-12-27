@@ -3,11 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9c985e06-468e-4281-9756-8a2d2c077313" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/actions/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/actions/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/components/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/components/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/js/components/Funtions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/components/Funtions.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/components/Landing.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/components/Landing.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/components/Navigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/components/Navigation.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/js/components/SignIn.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/components/SignIn.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/constants/action-types.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/constants/action-types.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/reducers/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/reducers/index.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -70,14 +72,14 @@
     <session id="1163677381">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="22" />
+          <entry key="project.closed" value="23" />
           <entry key="project.open.time.100" value="1" />
           <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.40" value="1" />
           <entry key="project.open.time.41" value="1" />
           <entry key="project.open.time.42" value="4" />
           <entry key="project.open.time.45" value="1" />
-          <entry key="project.open.time.47" value="1" />
+          <entry key="project.open.time.47" value="2" />
           <entry key="project.open.time.48" value="1" />
           <entry key="project.open.time.51" value="1" />
           <entry key="project.open.time.54" value="2" />
@@ -89,12 +91,12 @@
           <entry key="project.open.time.71" value="1" />
           <entry key="project.open.time.74" value="1" />
           <entry key="project.open.time.80" value="1" />
-          <entry key="project.opened" value="23" />
+          <entry key="project.opened" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.js.language.service.starts">
         <counts>
-          <entry key="ESLintLanguageService" value="20" />
+          <entry key="ESLintLanguageService" value="21" />
           <entry key="TypeScriptServerServiceImpl" value="1" />
         </counts>
       </usages-collector>
@@ -102,10 +104,10 @@
         <counts>
           <entry key="css" value="9" />
           <entry key="jpg" value="1" />
-          <entry key="js" value="127" />
+          <entry key="js" value="135" />
           <entry key="json" value="3" />
-          <entry key="orig" value="1" />
-          <entry key="ts" value="1" />
+          <entry key="orig" value="2" />
+          <entry key="ts" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
@@ -113,23 +115,23 @@
           <entry key="CSS" value="9" />
           <entry key="Image" value="1" />
           <entry key="JSON" value="3" />
-          <entry key="JavaScript" value="127" />
-          <entry key="PLAIN_TEXT" value="1" />
-          <entry key="TypeScript" value="1" />
+          <entry key="JavaScript" value="135" />
+          <entry key="PLAIN_TEXT" value="2" />
+          <entry key="TypeScript" value="2" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="css" value="295" />
           <entry key="dummy" value="25" />
-          <entry key="js" value="35954" />
+          <entry key="js" value="38597" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="295" />
           <entry key="HTML" value="1" />
-          <entry key="JavaScript" value="35953" />
+          <entry key="JavaScript" value="38596" />
           <entry key="PLAIN_TEXT" value="25" />
         </counts>
       </usages-collector>
@@ -140,8 +142,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/js/components/Home.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="10465">
-              <caret line="545" selection-start-line="545" selection-end-line="545" />
+            <state relative-caret-position="414">
+              <caret line="403" column="66" selection-start-line="403" selection-start-column="10" selection-end-line="403" selection-end-column="66" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -149,11 +151,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/js/components/Navigation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="231">
-              <caret line="35" column="14" lean-forward="true" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="14" />
+            <state relative-caret-position="-184">
+              <caret line="31" column="38" selection-start-line="31" selection-start-column="38" selection-end-line="31" selection-end-column="38" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -165,35 +167,38 @@
         <entry file="file://$PROJECT_DIR$/src/js/components/App.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="415">
-              <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
+              <caret line="79" column="12" lean-forward="true" selection-start-line="79" selection-start-column="12" selection-end-line="79" selection-end-column="12" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
+                <element signature="e#359#395#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/js/components/Landing.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="1031" column="5" lean-forward="true" selection-start-line="1031" selection-start-column="5" selection-end-line="1031" selection-end-column="5" />
+            <state relative-caret-position="355">
+              <caret line="1335" column="173" selection-start-line="1335" selection-start-column="173" selection-end-line="1335" selection-end-column="173" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
                 <element signature="e#1098#1519#0" />
                 <element signature="n#!!block;n#componentDidMount#0;n#LandingPage#0" />
-                <element signature="e#8263#11447#0" />
                 <element signature="n#!!block;n#updateEnergy#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#shouldComponentUpdate#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#chatBox#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#post#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#onClickOthers#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#showOthers#0;n#LandingPage#0" />
+                <element signature="n#!!block;n#showPosts#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#show_post#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#onClickReply#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#newComment#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#reaction#0;n#LandingPage#0" />
                 <element signature="n#!!block;n#payment#0;n#LandingPage#0" />
+                <element signature="n#!!block;n#updateReaction#0;n#LandingPage#0" />
+                <element signature="n#!!block;n#createAccount#0;n#LandingPage#0" />
               </folding>
             </state>
           </provider>
@@ -202,11 +207,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/js/reducers/index.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="369">
-              <caret line="46" column="20" lean-forward="true" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
-              <folding>
-                <element signature="e#0#173#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="-552">
+              <caret line="6" column="15" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="15" />
             </state>
           </provider>
         </entry>
@@ -214,8 +216,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/js/components/SignIn.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="506">
-              <caret line="67" column="38" lean-forward="true" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
+            <state relative-caret-position="235">
+              <caret line="135" column="51" selection-start-line="135" selection-start-column="51" selection-end-line="135" selection-end-column="51" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -236,8 +238,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>keypair</find>
-      <find>chatBox</find>
       <find>con</find>
       <find>getTime</find>
       <find>this.props.data</find>
@@ -261,11 +261,13 @@
       <find>this.props.E</find>
       <find>prk</find>
       <find>this.props.sequence</find>
-      <find>sequence</find>
       <find>this.props.Sequence</find>
       <find>this.props.userPost</find>
-      <find>console</find>
       <find>pk</find>
+      <find>inner</find>
+      <find>console</find>
+      <find>s</find>
+      <find>sequence</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -286,17 +288,17 @@
         <option value="$PROJECT_DIR$/src/js/store/index.js" />
         <option value="$PROJECT_DIR$/src/js/components/Funtion.js" />
         <option value="$PROJECT_DIR$/src/index.css" />
-        <option value="$PROJECT_DIR$/src/js/constants/action-types.js" />
-        <option value="$PROJECT_DIR$/src/js/actions/index.js" />
-        <option value="$PROJECT_DIR$/src/js/reducers/index.js" />
         <option value="$PROJECT_DIR$/src/js/components/Home.js" />
         <option value="$PROJECT_DIR$/src/js/transaction/v1.js" />
         <option value="$PROJECT_DIR$/src/js/components/Account.js" />
         <option value="$PROJECT_DIR$/src/js/components/Funtions.js" />
-        <option value="$PROJECT_DIR$/src/js/components/SignIn.js" />
+        <option value="$PROJECT_DIR$/src/js/constants/action-types.js" />
+        <option value="$PROJECT_DIR$/src/js/actions/index.js" />
+        <option value="$PROJECT_DIR$/src/js/reducers/index.js" />
         <option value="$PROJECT_DIR$/src/js/components/App.js" />
-        <option value="$PROJECT_DIR$/src/js/components/Landing.js" />
         <option value="$PROJECT_DIR$/src/js/components/Navigation.js" />
+        <option value="$PROJECT_DIR$/src/js/components/SignIn.js" />
+        <option value="$PROJECT_DIR$/src/js/components/Landing.js" />
       </list>
     </option>
   </component>
@@ -332,7 +334,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -397,6 +398,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -489,20 +491,21 @@
       <workItem from="1545751086415" duration="1373000" />
       <workItem from="1545780669411" duration="297000" />
       <workItem from="1545793127771" duration="24071000" />
-      <workItem from="1545822943934" duration="19780000" />
+      <workItem from="1545822943934" duration="19881000" />
+      <workItem from="1545875901513" duration="11670000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="369329000" />
+    <option name="totallyTimeSpent" value="381100000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49832216" visible="true" weight="0.25" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="npm" order="2" side_tool="true" />
+      <window_info id="npm" order="2" sideWeight="0.5016779" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32885906" />
@@ -521,9 +524,9 @@
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
     <layout-to-restore>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49832216" visible="true" weight="0.25" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="npm" order="2" side_tool="true" />
+      <window_info id="npm" order="2" sideWeight="0.5016779" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32885906" />
@@ -630,20 +633,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/js/constants/action-types.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="12" column="33" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/js/actions/index.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="27" column="72" lean-forward="true" selection-start-line="27" selection-start-column="72" selection-end-line="27" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/js/transaction/v1.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="415">
@@ -668,10 +657,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external/react.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="1001" column="8" selection-start-line="1001" selection-start-column="8" selection-end-line="1001" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/components/Landing.js.orig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-19366" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/constants/action-types.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="14" column="47" selection-start-line="14" selection-start-column="47" selection-end-line="14" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/actions/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="368">
+          <caret line="29" column="62" selection-start-line="29" selection-start-column="62" selection-end-line="29" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/js/components/Home.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10465">
-          <caret line="545" selection-start-line="545" selection-end-line="545" />
+        <state relative-caret-position="414">
+          <caret line="403" column="66" selection-start-line="403" selection-start-column="10" selection-end-line="403" selection-end-column="66" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
@@ -681,73 +696,73 @@
     <entry file="file://$PROJECT_DIR$/src/js/components/App.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="415">
-          <caret line="69" lean-forward="true" selection-start-line="69" selection-end-line="69" />
+          <caret line="79" column="12" lean-forward="true" selection-start-line="79" selection-start-column="12" selection-end-line="79" selection-end-column="12" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/js/components/Funtions.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="20" column="4" selection-start-line="20" selection-start-column="4" selection-end-line="20" selection-end-column="4" />
-          <folding>
-            <element signature="e#0#26#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/js/components/Landing.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="1031" column="5" lean-forward="true" selection-start-line="1031" selection-start-column="5" selection-end-line="1031" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-            <element signature="e#1098#1519#0" />
-            <element signature="n#!!block;n#componentDidMount#0;n#LandingPage#0" />
-            <element signature="e#8263#11447#0" />
-            <element signature="n#!!block;n#updateEnergy#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#shouldComponentUpdate#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#chatBox#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#post#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#onClickOthers#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#showOthers#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#show_post#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#onClickReply#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#newComment#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#reaction#0;n#LandingPage#0" />
-            <element signature="n#!!block;n#payment#0;n#LandingPage#0" />
+            <element signature="e#359#395#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/js/reducers/index.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="46" column="20" lean-forward="true" selection-start-line="46" selection-start-column="20" selection-end-line="46" selection-end-column="20" />
-          <folding>
-            <element signature="e#0#173#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="-552">
+          <caret line="6" column="15" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="15" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/js/components/SignIn.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="506">
-          <caret line="67" column="38" lean-forward="true" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="38" />
+        <state relative-caret-position="235">
+          <caret line="135" column="51" selection-start-line="135" selection-start-column="51" selection-end-line="135" selection-end-column="51" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/components/Funtions.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="644">
+          <caret line="95" lean-forward="true" selection-start-line="95" selection-end-line="95" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/js/components/Navigation.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="35" column="14" lean-forward="true" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="14" />
+        <state relative-caret-position="-184">
+          <caret line="31" column="38" selection-start-line="31" selection-start-column="38" selection-end-line="31" selection-end-column="38" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/js/components/Landing.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="355">
+          <caret line="1335" column="173" selection-start-line="1335" selection-start-column="173" selection-end-line="1335" selection-end-column="173" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+            <element signature="e#1098#1519#0" />
+            <element signature="n#!!block;n#componentDidMount#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#updateEnergy#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#shouldComponentUpdate#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#chatBox#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#post#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#onClickOthers#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#showOthers#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#showPosts#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#show_post#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#onClickReply#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#newComment#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#reaction#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#payment#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#updateReaction#0;n#LandingPage#0" />
+            <element signature="n#!!block;n#createAccount#0;n#LandingPage#0" />
           </folding>
         </state>
       </provider>

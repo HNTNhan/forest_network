@@ -11,3 +11,5 @@ export const FOLLOWINGS = "FOLLOWINGS";
 export const USERPOST = "USERPOST";
 export const ENERGY = "ENERGY";
 export const FOLLOWER = "FOLLOWER";
+export const CREATEACCOUND = "CREATEACCOUND";
+export const LASTTRANSICTION = "LASTTRANSICTION";

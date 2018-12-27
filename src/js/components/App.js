@@ -81,7 +81,6 @@ class App extends Component {
     }
 
     render() {
-        console.log(123);
         this.statusWebsite();
         return (
             <div>

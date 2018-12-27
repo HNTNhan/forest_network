@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as routes from '../constants/routes';
 import { compose } from 'redux'
-import {auth, key, sequence, followings, userName, userPicture,energy} from "../actions";
+import {auth, key, sequence, followings, userName, userPicture,energy, lastTransiction, createAccount} from "../actions";
 import axios from 'axios';
 import { Keypair, StrKey } from 'stellar-base';
 import {decode} from "../transaction";
@@ -14,7 +14,9 @@ import "../../css/singin.css";
 
 const mapStateToProps = state => {
     return { auth: state.auth, website: state.website, sequence: state.sequence, keypair: state.key,
-        followings: state.followings, userName:state.userName, userPicture: state.userPicture, systemActive: state.systemActive};
+        followings: state.followings, userName:state.userName, userPicture: state.userPicture, systemActive: state.systemActive,
+        createAccount: state.createAccount, lastTransiction: state.lastTransiction,
+    };
 };
 
 
@@ -27,6 +29,8 @@ const mapDispatchToProps = dispatch => {
         UserName: string => dispatch(userName(string)),
         UserPicture: string => dispatch(userPicture(string)),
         Energy: object => dispatch(energy(object)),
+        LastTransiction: int => dispatch(lastTransiction(int)),
+        CreateAccount: array => dispatch(createAccount(array)),
     };
 };
 class SignInPage extends Component{
@@ -38,6 +42,7 @@ class SignInPage extends Component{
         };
         this.signIn = this.signIn.bind(this);
         this.signUp = this.signUp.bind(this);
+        this.createKey = this.createKey.bind(this);
     }
 
 
@@ -45,23 +50,25 @@ class SignInPage extends Component{
         setTimeout(()=>{
             console.log(this.props.website);
             console.log(this.props.systemActive);
-        }, 1000);
+        }, 2000);
 
-        //if(this.props.auth === true) this.props.history.push(routes.LANDING);
+        if(this.props.auth === true) {
+            this.props.history.push(routes.LANDING);
+            return;
+        }
     }
 
-    //SBXI7TZ6DXHTOX6QW6VQ7F3YWARVA76ZWWKXWC6COHJTQEEJP3ELPQOD
     async signIn(){
         const prk = document.getElementById("prk").value;
         if (StrKey.isValidEd25519SecretSeed(prk)) {
             const pk = Keypair.fromSecret(prk);
             let data = await getData(this.props.website, pk.publicKey());
-
             if(data === "Not exist" || data.length === 0)
             {
                 this.setState({
                     check: false,
-                })
+                });
+                return;
             }
             else {
                 let balance = 0;
@@ -150,7 +157,10 @@ class SignInPage extends Component{
                     }
                 }
             }
-            this.props.history.push(routes.LANDING);
+            setTimeout(()=>{
+                this.props.history.push(routes.LANDING);
+            }, 500);
+
         }
         else {
             this.setState({
@@ -159,8 +169,40 @@ class SignInPage extends Component{
         }
     }
 
-    signUp(){
+    createKey() {
+        const keypair = Keypair.random();
+        document.getElementById("pk1").value = keypair.publicKey();
+        document.getElementById("prk1").value = keypair.secret();
+    }
 
+    async signUp(){
+        const pk = document.getElementById("pk").value;
+        if(this.props.createAccount === null) this.props.CreateAccount([]);
+        let create = this.props.createAccount;
+        if (StrKey.isValidEd25519PublicKey(pk)) {
+            const check = await getData(this.props.website, pk);
+            if(check.length > 0) alert("Public key existed!");
+            else {
+                for(let i =0; i<create.length; i++) {
+                    if(create[i].pk === pk) {
+                        alert("Public key is waiting to create!");
+                        return;
+                    }
+                }
+                let date = new Date();
+                date = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: '2-digit',day: '2-digit', hour: '2-digit', minute: '2-digit'}).format(date);
+                let temp_create = {
+                    pk: pk,
+                    time: date,
+                };
+                create = create.concat(temp_create);
+                this.props.CreateAccount(create);
+                alert("Request send!\nPlease sign in after about 1 day.");
+            }
+        }
+        else {
+            alert("Invalid Public key!");
+        }
     }
 
     render() {
@@ -208,10 +250,23 @@ class SignInPage extends Component{
                         <div>Sign up new account</div>
                     </div>
                     <div className="form_sign_in">
+                        <div style={{textAlign: "center"}}>
+                            <button type="submit" className="btn btn-dark" onClick={this.createKey}>Create key</button>
+                        </div>
                         <div className="form-group">
-                            <label>Email:</label>
-                            <input type="email" name="prk" className="form-control"
-                                   id="prk" placeholder="Please enter your email"/>
+                            <label>Public key:</label>
+                            <input type="text" name="pk" className="form-control"
+                                   id="pk1" placeholder="" readOnly/>
+                        </div>
+                        <div className="form-group">
+                            <label>Private key:</label>
+                            <input type="text" name="prk1" className="form-control"
+                                   id="prk1" placeholder="" readOnly/>
+                        </div>
+                        <div className="form-group">
+                            <label>Type Public key here to create account:</label>
+                            <input type="text" name="pk" className="form-control"
+                                   id="pk" placeholder="Please enter your public key"/>
                         </div>
                         <div style={{textAlign: "center"}}>
                             <button type="submit" className="btn btn-dark" style={{width: "100%"}} onClick={this.signUp}>Submit</button>

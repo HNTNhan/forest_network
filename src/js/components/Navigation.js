@@ -28,9 +28,8 @@ class Navigation extends  Component  {
     }
 
     async logOut(){
-        await store.persistor.flush();
         this.props.LogOut();
-
+        await store.persistor.flush();
     }
 
     render() {
@@ -43,13 +42,13 @@ class Navigation extends  Component  {
                                 <div className="col-lg-3 col-md-12 col-sm-12" style={{padding: 0, textAlign: "center"}}>
                                     <button type="button" className="btn btn-link"
                                             style={{background: "none", border: "none"}}>
-                                        <Link to={routes.LANDING}>Home</Link>
+                                        <Link to={routes.LANDING} onClick={this.forceUpdate}>Home</Link>
                                     </button>
                                 </div>
                                 <div className="col-lg-5 col-md-12 col-sm-12" style={{padding: 0, textAlign: "center"}}>
                                     <button type="button" className="btn btn-link"
                                             style={{background: "none", border: "none"}}>
-                                        <Link to={routes.LANDING} onClick={this.forceUpdate}>Notifications</Link>
+                                        <Link to={routes.LANDING}>Notifications</Link>
                                     </button>
                                 </div>
                             </div>
